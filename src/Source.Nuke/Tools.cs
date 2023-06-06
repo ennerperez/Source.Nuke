@@ -50,9 +50,9 @@ namespace Nuke.Common.Tools.Source
 		public virtual string Input { get; internal set; }
 
 		/// <summary>
-		///
+		/// Contains the output of the process execution.
 		/// </summary>
-		public virtual string Output { get; internal set; }
+		public virtual string StdOutput { get; internal set; }
 
 		/// <summary>
 		///
