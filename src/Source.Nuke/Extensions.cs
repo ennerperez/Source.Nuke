@@ -264,14 +264,14 @@ namespace Nuke.Common.Tools.Source
 		///
 		/// </summary>
 		/// <param name="toolSettings"></param>
-		/// <param name="output"></param>
+		/// <param name="stdOutput"></param>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		[Pure]
-		public static T SetOutput<T>(this T toolSettings, string output) where T : Tools
+		public static T SetStdOutput<T>(this T toolSettings, string stdOutput) where T : Tools
 		{
 			toolSettings = toolSettings.NewInstance();
-			toolSettings.Output = output;
+			toolSettings.StdOutput = stdOutput;
 			return toolSettings;
 		}
 
@@ -282,10 +282,10 @@ namespace Nuke.Common.Tools.Source
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		[Pure]
-		public static T ResetOutput<T>(this T toolSettings) where T : Tools
+		public static T ResetStdOutput<T>(this T toolSettings) where T : Tools
 		{
 			toolSettings = toolSettings.NewInstance();
-			toolSettings.Output = null;
+			toolSettings.StdOutput = null;
 			return toolSettings;
 		}
 

@@ -45,8 +45,8 @@ namespace Nuke.Common.Tools.Source
 
 				using var process = ProcessTasks.StartProcess(toolsSettings);
 				process.AssertZeroExitCode();
-				if (!string.IsNullOrWhiteSpace(toolsSettings.Output))
-					File.WriteAllText(toolsSettings.Output, process.Output.StdToText());
+				if (!string.IsNullOrWhiteSpace(toolsSettings.StdOutput))
+					File.WriteAllText(toolsSettings.StdOutput, process.Output.StdToText());
 				toolsSettings.Callback?.Invoke();
 				return process.Output;
 			}
