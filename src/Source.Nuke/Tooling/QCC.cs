@@ -74,7 +74,7 @@ namespace Nuke.Common.Tools.Source.Tooling
                 .Add("-t", TagReversed)
                 .Add("-ihvtest", IHVTest)
                 //
-                .Add("{value}", Input);
+                .Add("\"{value}\"", Input);
             return base.ConfigureProcessArguments(arguments);
         }
 
