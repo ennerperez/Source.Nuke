@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -17,11 +19,9 @@ class Build : NukeBuild
     ///   - Microsoft VSCode           https://nuke.build/vscode
     public static int Main() => Execute<Build>(x => x.Pack);
 
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")] readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Solution]
-    readonly Solution Solution;
+    [Solution] readonly Solution Solution;
 
     string Author = "Enner Pérez";
     AbsolutePath SourceDirectory => RootDirectory / "src";
@@ -52,7 +52,6 @@ class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-
             DotNetBuild(s => s
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
@@ -66,12 +65,22 @@ class Build : NukeBuild
             var projectInfo = Solution.GetProjects("*.Nuke").FirstOrDefault();
             if (projectInfo != null)
             {
+                var version = "1.0.0";
+                var assemblyInfoVersionFile = Path.Combine(projectInfo.Directory, "Properties", "AssemblyInfo.cs");
+                if (File.Exists(assemblyInfoVersionFile))
+                {
+                    var content = File.ReadAllText(assemblyInfoVersionFile);
+                    var regex = Regex.Match(content, "AssemblyVersion\\(\"(.*)\"\\)", RegexOptions.Compiled);
+                    if (regex.Success && regex.Groups.Count > 1) version = regex.Groups[1].Value;
+                }
+
                 DotNetPack(s => s
                     .SetProject(projectInfo)
                     .SetConfiguration(Configuration)
                     .AddProperty("Icon", "icon.png")
                     .SetPackageId($"{projectInfo.Name}")
                     .SetTitle($"{projectInfo.Name}")
+                    .SetVersion(version)
                     .SetAuthors(Author)
                     .SetDescription($"{projectInfo.Name}")
                     .SetCopyright(Author)
