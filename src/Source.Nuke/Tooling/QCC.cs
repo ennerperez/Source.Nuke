@@ -31,7 +31,7 @@ namespace Nuke.Common.Tools.Source.Tooling
             arguments
                 // General
                 .Add("-game {value}", Game)
-                .Add("-quiet", Verbose)
+                .Add("-quiet", Quiet)
                 .Add("-x360", X360)
                 .Add("-nox360", NoX360)
                 .Add("-nowarnings", NoWarnings)
