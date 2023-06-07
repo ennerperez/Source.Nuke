@@ -406,6 +406,7 @@ namespace Nuke.Common.Tools.Source.Tooling
             {
                 var toolPath = Path.Combine(Path.GetDirectoryName(ProcessToolPath) ?? string.Empty, "..");
                 if (string.IsNullOrWhiteSpace(toolPath)) return false;
+                if (!Directory.Exists(toolPath)) Directory.CreateDirectory(toolPath);
                 if (!string.IsNullOrWhiteSpace(toolPath))
                 {
                     localFile = Path.Combine(toolPath, fileName);

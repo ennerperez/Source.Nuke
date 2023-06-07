@@ -64,13 +64,14 @@ namespace Nuke.Common.Tools.Source.Tooling
 			{
 				var toolPath = Path.GetDirectoryName(ProcessToolPath);
 				if (string.IsNullOrWhiteSpace(toolPath)) return false;
+                if (!Directory.Exists(toolPath)) Directory.CreateDirectory(toolPath);
 				if (!string.IsNullOrWhiteSpace(toolPath))
 				{
 					localFile = Path.Combine(toolPath, fileName);
 					localDir = Path.Combine(toolPath, GetType().Name.ToLower());
 				}
 				if (string.IsNullOrWhiteSpace(localFile)) return false;
-				if (!File.Exists(localFile))
+                if (!File.Exists(localFile))
 				{
 					using (var client = new HttpClient())
 					{
