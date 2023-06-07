@@ -61,7 +61,8 @@ namespace Nuke.Common.Tools.Source.Tooling
 			if (fileName != null)
 			{
 				var toolPath = Path.GetDirectoryName(ProcessToolPath);
-				if (string.IsNullOrWhiteSpace(toolPath)) return false;
+                if (string.IsNullOrWhiteSpace(toolPath)) return false;
+                if (!Directory.Exists(toolPath)) Directory.CreateDirectory(toolPath);
 				if (!string.IsNullOrWhiteSpace(toolPath))
 				{
 					localFile = Path.Combine(toolPath, fileName);

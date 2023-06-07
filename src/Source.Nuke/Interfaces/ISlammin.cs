@@ -41,6 +41,7 @@ namespace Nuke.Common.Tools.Source.Interfaces
 
 			var toolPath = binPath;
 			if (string.IsNullOrWhiteSpace(toolPath)) return;
+            if (!Directory.Exists(toolPath)) Directory.CreateDirectory(toolPath);
 			if (!string.IsNullOrWhiteSpace(toolPath))
 			{
 				localFile = Path.Combine(toolPath, fileName);
