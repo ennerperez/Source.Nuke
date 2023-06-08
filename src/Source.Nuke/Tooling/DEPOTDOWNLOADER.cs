@@ -12,151 +12,86 @@ using Nuke.Common.Tools.Source.Interfaces;
 
 namespace Nuke.Common.Tools.Source.Tooling
 {
-	/// <summary>
-	///
-	/// </summary>
-	[PublicAPI]
-	[ExcludeFromCodeCoverage]
-	[Serializable]
-	public class DEPOTDOWNLOADER : Tools, IDownloadable
-	{
+    /// <summary>
+    ///
+    /// </summary>
+    [PublicAPI]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class DEPOTDOWNLOADER : Tools, IDownloadable, ICredential
+    {
+        public DEPOTDOWNLOADER() : base("DepotDownloader.exe")
+        {
+        }
 
-		public DEPOTDOWNLOADER() : base("DepotDownloader.exe")
-		{
+        public override string ProcessToolPath => Path.Combine(InstallDir, Executable);
 
-		}
+        /// <summary>
+        /// Overwrite existing output files
+        /// </summary>
+        public virtual bool? Force { get; internal set; }
 
-		public override string ProcessToolPath => Path.Combine(InstallDir, Executable);
+        public virtual string UserName { get; set; }
+        public virtual string Password { get; set; }
+        public virtual string InstallDir { get; set; }
 
-		/// <summary>
-		/// Overwrite existing output files
-		/// </summary>
-		public virtual bool? Force { get; internal set; }
+        /// <summary>
+        /// Keep (don't delete) input files
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
+        protected override Arguments ConfigureProcessArguments(Arguments arguments)
+        {
+            arguments
+                .Add("-username {value}", UserName)
+                .Add("-password {value}", Password)
+                .Add("-app {value}", AppId)
+                .Add("-dir {value}", Path.Combine(InstallDir, AppId.ToString()));
+            return base.ConfigureProcessArguments(arguments);
+        }
 
-		public virtual string Username { get; internal set; }
-		public virtual string Password { get; internal set; }
-		public virtual string InstallDir { get; set; }
+        public string Url => "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip";
 
-		/// <summary>
-		/// Keep (don't delete) input files
-		/// </summary>
-		/// <param name="arguments"></param>
-		/// <returns></returns>
-		protected override Arguments ConfigureProcessArguments(Arguments arguments)
-		{
-			arguments
-				.Add("-username {value}", Username)
-				.Add("-password {value}", Password)
-				.Add("-app {value}", AppId)
-				.Add("-dir {value}", Path.Combine(InstallDir, AppId.ToString()));
-			return base.ConfigureProcessArguments(arguments);
-		}
-
-		public string Url => "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip";
-		public bool Download()
-		{
-			var localFile = string.Empty;
-			var localDir = string.Empty;
-			var fileName = Path.GetFileName(Url);
-			if (fileName != null)
-			{
-				var toolPath = Path.GetDirectoryName(ProcessToolPath);
+        // ReSharper disable once CognitiveComplexity
+        public bool Download()
+        {
+            var localFile = string.Empty;
+            var localDir = string.Empty;
+            var fileName = Path.GetFileName(Url);
+            if (fileName != null)
+            {
+                var toolPath = Path.GetDirectoryName(ProcessToolPath);
                 if (string.IsNullOrWhiteSpace(toolPath)) return false;
                 if (!Directory.Exists(toolPath)) Directory.CreateDirectory(toolPath);
-				if (!string.IsNullOrWhiteSpace(toolPath))
-				{
-					localFile = Path.Combine(toolPath, fileName);
-					localDir = toolPath; //Path.Combine(toolPath, GetType().Name.ToLower());
-				}
-				if (string.IsNullOrWhiteSpace(localFile)) return false;
-				if (!File.Exists(localFile))
-				{
-					using (var client = new HttpClient())
-					{
-						var response = client.Send(new HttpRequestMessage(HttpMethod.Get, Url));
-						using var resultStream = response.Content.ReadAsStream();
-						using var fileStream = File.OpenWrite(localFile);
-						resultStream.CopyTo(fileStream);
-					}
-				}
-				if (File.Exists(localFile) && !File.Exists(Path.Combine(localDir, Executable)))
-					ZipFile.ExtractToDirectory(localFile, localDir, true);
-			}
-			return !string.IsNullOrWhiteSpace(localFile) && File.Exists(localFile) &&
-			       !string.IsNullOrWhiteSpace(localDir) && Directory.Exists(localDir) &&
-			       File.Exists(Path.Combine(localDir, Executable));
-		}
-	}
+                if (!string.IsNullOrWhiteSpace(toolPath))
+                {
+                    localFile = Path.Combine(toolPath, fileName);
+                    localDir = toolPath;
+                }
 
-	public static partial class Extensions
-	{
+                if (string.IsNullOrWhiteSpace(localFile)) return false;
+                if (!File.Exists(localFile))
+                {
+                    using (var client = new HttpClient())
+                    {
+                        var response = client.Send(new HttpRequestMessage(HttpMethod.Get, Url));
+                        using var resultStream = response.Content.ReadAsStream();
+                        using var fileStream = File.OpenWrite(localFile);
+                        resultStream.CopyTo(fileStream);
+                    }
+                }
 
-		#region Username
+                if (File.Exists(localFile) && !File.Exists(Path.Combine(localDir, Executable)))
+                    ZipFile.ExtractToDirectory(localFile, localDir, true);
+            }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="username"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetUsername<T>(this T toolSettings, string username) where T : DEPOTDOWNLOADER
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Username = username;
-			return toolSettings;
-		}
+            return !string.IsNullOrWhiteSpace(localFile) && File.Exists(localFile) &&
+                   !string.IsNullOrWhiteSpace(localDir) && Directory.Exists(localDir) &&
+                   File.Exists(Path.Combine(localDir, Executable));
+        }
+    }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetUsername<T>(this T toolSettings) where T : DEPOTDOWNLOADER
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Username = null;
-			return toolSettings;
-		}
-
-		#endregion
-
-		#region Password
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="password"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetPassword<T>(this T toolSettings, string password) where T : DEPOTDOWNLOADER
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Password = password;
-			return toolSettings;
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetPassword<T>(this T toolSettings) where T : DEPOTDOWNLOADER
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Username = null;
-			return toolSettings;
-		}
-
-		#endregion
-
-
-	}
+    public static partial class Extensions
+    {
+    }
 }

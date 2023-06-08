@@ -21,8 +21,8 @@ namespace Nuke.Common.Tools.Source.Interfaces
 
 		public enum Mode
 		{
-			SinglePlayer = 1,
-			MultiPlayer = 2
+			SINGLE_PLAYER = 1,
+			MULTI_PLAYER = 2
 		}
 
 		public static void Download(Tools toolsSettings)
@@ -31,9 +31,9 @@ namespace Nuke.Common.Tools.Source.Interfaces
 			var urlMp = "https://github.com/alpaka-gaming/SlamminTools/releases/download/v1.6/SlamminToolsMP.zip";
 
 			var mpGames = new long[] {243750};
-			var mode = mpGames.Contains(toolsSettings.AppId) ? Mode.MultiPlayer : Mode.SinglePlayer;
+			var mode = mpGames.Contains(toolsSettings.AppId) ? Mode.MULTI_PLAYER : Mode.SINGLE_PLAYER;
 			var binPath = Path.Combine(toolsSettings.Game, "..", "bin");
-			var url = mode == Mode.SinglePlayer ? urlSp : urlMp;
+			var url = mode == Mode.SINGLE_PLAYER ? urlSp : urlMp;
 
 			var localFile = string.Empty;
 			var localDir = string.Empty;
@@ -61,7 +61,7 @@ namespace Nuke.Common.Tools.Source.Interfaces
 			if (File.Exists(localFile))
 			{
 				ZipFile.ExtractToDirectory(localFile, localDir, true);
-				var files = Directory.GetFiles(Path.Combine(localDir, mode == Mode.MultiPlayer ? "MP" : "SP")).Where(m => m.Contains(Path.GetFileNameWithoutExtension(toolsSettings.Executable) ?? string.Empty)).ToArray();
+				var files = Directory.GetFiles(Path.Combine(localDir, mode == Mode.MULTI_PLAYER ? "MP" : "SP")).Where(m => m.Contains(Path.GetFileNameWithoutExtension(toolsSettings.Executable) ?? string.Empty)).ToArray();
 				foreach (var file in files)
 					File.Move(file, Path.Combine(localDir, Path.GetFileName(file)), true);
 			}

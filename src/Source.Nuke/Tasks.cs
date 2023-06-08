@@ -11,7 +11,7 @@ namespace Nuke.Common.Tools.Source
 {
 	[PublicAPI]
 	[ExcludeFromCodeCoverage]
-	public static class Tasks
+	public static partial class Tasks
 	{
 		public static IReadOnlyCollection<Output> Source(Configure<Tools> configurator)
 		{
