@@ -33,7 +33,6 @@ namespace Nuke.Common.Tools.Source.Tooling
 
         public virtual string UserName { get; set; }
         public virtual string Password { get; set; }
-        public virtual string InstallDir { get; set; }
 
         /// <summary>
         /// Keep (don't delete) input files
@@ -50,7 +49,8 @@ namespace Nuke.Common.Tools.Source.Tooling
             return base.ConfigureProcessArguments(arguments);
         }
 
-        public string Url => "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip";
+        //public string Url => "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip";
+        public string Url => "http://74.91.112.185/fastdl/tools/DepotDownloader-windows-x64.zip";
 
         // ReSharper disable once CognitiveComplexity
         public bool Download()

@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Source.Interfaces;
@@ -68,7 +69,7 @@ namespace Nuke.Common.Tools.Source.Tooling
                 .Add("-stripmodel {value}", StripModel)
                 .Add("-stripvhv {value}", StripVHV)
                 .Add("-makefile", MakeFile)
-                .Add("-basedir {value}", BaseDir)
+                .Add("-basedir {value}", Output)
                 .Add("-tempcontent {value}", TempContent)
                 // NonFunctional
                 .Add("-t", TagReversed)
@@ -77,6 +78,11 @@ namespace Nuke.Common.Tools.Source.Tooling
                 .Add("\"{value}\"", Input);
             return base.ConfigureProcessArguments(arguments);
         }
+
+        /// <summary>
+        /// Output directory.
+        /// </summary>
+        public string Output { get; set; }
 
         #region General
 
@@ -260,11 +266,6 @@ namespace Nuke.Common.Tools.Source.Tooling
         public virtual bool? MakeFile { get; internal set; }
 
         /// <summary>
-        /// Runs studiomdl in the context of the provided path.
-        /// </summary>
-        public virtual string BaseDir { get; internal set; }
-
-        /// <summary>
         /// Adds the provided path as a content search path.
         /// </summary>
         public virtual string TempContent { get; internal set; }
@@ -286,7 +287,7 @@ namespace Nuke.Common.Tools.Source.Tooling
         #endregion
     }
 
-    public static partial class Extensions
+    public static partial class QCCExtensions
     {
         #region NoP4
 
@@ -358,6 +359,39 @@ namespace Nuke.Common.Tools.Source.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.NoP4 = !toolSettings.NoP4;
+            return toolSettings;
+        }
+
+        #endregion
+
+        #region Output
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="output"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetOutput<T>(this T toolSettings, string output) where T : QCC
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Output = output;
+            return toolSettings;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetOutput<T>(this T toolSettings) where T : QCC
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Output = null;
             return toolSettings;
         }
 

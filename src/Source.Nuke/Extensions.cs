@@ -84,6 +84,39 @@ namespace Nuke.Common.Tools.Source
 
 		#endregion
 
+        #region InstallDir
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="installDir"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetInstallDir<T>(this T toolSettings, string installDir) where T :  Tools
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.InstallDir = installDir;
+            return toolSettings;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetInstallDir<T>(this T toolSettings) where T :  Tools
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.InstallDir = null;
+            return toolSettings;
+        }
+
+        #endregion
+
 		#region Skip
 
 		/// <summary>
@@ -610,39 +643,6 @@ namespace Nuke.Common.Tools.Source
         {
 	        toolSettings = toolSettings.NewInstance();
 	        toolSettings.UsingSlammin = !toolSettings.UsingSlammin;
-	        return toolSettings;
-        }
-
-        #endregion
-
-        #region InstallDir
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="toolSettings"></param>
-        /// <param name="installDir"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        [Pure]
-        public static T SetInstallDir<T>(this T toolSettings, string installDir) where T :  Tools, IDownloadable
-        {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.InstallDir = installDir;
-	        return toolSettings;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="toolSettings"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        [Pure]
-        public static T ResetInstallDir<T>(this T toolSettings) where T :  Tools, IDownloadable
-        {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.InstallDir = null;
 	        return toolSettings;
         }
 

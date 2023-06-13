@@ -391,12 +391,11 @@ namespace Nuke.Common.Tools.Source.Tooling
         /// </summary>
         public string Folder { get; set; }
 
-        public virtual string InstallDir { get; set; }
-
-        public override string ProcessToolPath => Path.Combine(InstallDir, GetType().Name.ToLower() + "lib", Executable);
+        public override string ProcessToolPath => Path.Combine(InstallDir, Executable);
 
         public string Url => "https://nemstools.github.io/files/vtflib132-bin.zip";
 
+        // ReSharper disable once CognitiveComplexity
         public bool Download()
         {
             var localFile = string.Empty;
@@ -404,13 +403,13 @@ namespace Nuke.Common.Tools.Source.Tooling
             var fileName = Path.GetFileName(Url);
             if (fileName != null)
             {
-                var toolPath = Path.Combine(Path.GetDirectoryName(ProcessToolPath) ?? string.Empty, "..");
+                var toolPath = Path.GetDirectoryName(ProcessToolPath);
                 if (string.IsNullOrWhiteSpace(toolPath)) return false;
                 if (!Directory.Exists(toolPath)) Directory.CreateDirectory(toolPath);
                 if (!string.IsNullOrWhiteSpace(toolPath))
                 {
                     localFile = Path.Combine(toolPath, fileName);
-                    localDir = Path.Combine(toolPath, GetType().Name.ToLower() + "lib");
+                    localDir = toolPath;
                 }
 
                 if (string.IsNullOrWhiteSpace(localFile)) return false;
@@ -442,7 +441,7 @@ namespace Nuke.Common.Tools.Source.Tooling
         }
     }
 
-    public static class VTFExtensions
+    public static partial class VTFExtensions
     {
 
         #region Output

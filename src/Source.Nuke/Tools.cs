@@ -25,7 +25,7 @@ namespace Nuke.Common.Tools.Source
 
 		public string Executable { get; private set; }
 
-		public override string ProcessToolPath => Path.Combine(Game, "..", "bin", Executable);
+        public override string ProcessToolPath => Path.Combine(InstallDir, Executable);
 
 		/// <summary>
 		///
@@ -41,6 +41,12 @@ namespace Nuke.Common.Tools.Source
 		/// Specify the folder of the gameinfo.txt file.
 		/// </summary>
 		public virtual string Game { get; internal set; }
+
+
+        /// <summary>
+        /// Specify the Install folder.
+        /// </summary>
+        public virtual string InstallDir { get; internal set; }
 
 		public virtual long AppId { get; internal set; }
 

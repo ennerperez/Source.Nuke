@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	$basetexture "models/soccer_ball/soccer_ball"
+	$model 1
+}

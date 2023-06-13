@@ -33,8 +33,6 @@ namespace Nuke.Common.Tools.Source.Tooling
 
 		public virtual bool Keep { get; internal set; } = true;
 
-		public virtual string InstallDir { get; set; }
-
 		/// <summary>
 		/// Keep (don't delete) input files
 		/// </summary>

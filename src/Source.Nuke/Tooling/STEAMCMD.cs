@@ -36,7 +36,6 @@ namespace Nuke.Common.Tools.Source.Tooling
         public virtual string Password { get; set; }
 
         public virtual bool? Validate { get; internal set; }
-        public virtual string InstallDir { get; set; }
 
         /// <summary>
         /// Keep (don't delete) input files
