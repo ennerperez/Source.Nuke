@@ -6,12 +6,12 @@ using System.IO.Compression;
 using System.Net.Http;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Interfaces;
+using Nuke.Source.Interfaces;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
     /// <summary>
     ///
@@ -19,7 +19,7 @@ namespace Nuke.Common.Tools.Source.Tooling
     [PublicAPI]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class VTF : Tools, IDownloadable
+    public class VTF : Abstractions.Tooling, IDownloadable
     {
         public enum Formats
         {

@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
 	/// <summary>
 	/// https://developer.valvesoftware.com/wiki/VPK
@@ -14,7 +14,7 @@ namespace Nuke.Common.Tools.Source.Tooling
 	[PublicAPI]
 	[ExcludeFromCodeCoverage]
 	[Serializable]
-	public class VPK : Tools
+	public class VPK : Abstractions.Tooling
 	{
 
 		public VPK() : base("vpk.exe")

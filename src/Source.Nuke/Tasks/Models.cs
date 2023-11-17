@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using Nuke.Common.IO;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Tooling;
-using ValveKeyValue;
+using Nuke.Source.Tooling;
 
-namespace Nuke.Common.Tools.Source
+namespace Nuke.Source
 {
     public static partial class Tasks
     {
@@ -40,7 +37,7 @@ namespace Nuke.Common.Tools.Source
 
             foreach (var file in files)
             {
-                Source(_ => new QCC()
+                Abstractions.Tasks.Source(_ => new QCC()
                     .SetVerbose(op.Verbose)
                     .EnableNoP4()
                     .SetProcessWorkingDirectory(installDirectory)

@@ -1,4 +1,4 @@
-﻿namespace Nuke.Common.Tools.Source.Interfaces
+﻿namespace Nuke.Source.Interfaces
 {
     public interface ICredential
     {

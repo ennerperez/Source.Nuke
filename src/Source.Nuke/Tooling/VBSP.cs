@@ -5,9 +5,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Interfaces;
+using Nuke.Source.Interfaces;
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
 	/// <summary>
 	/// https://developer.valvesoftware.com/wiki/VBSP
@@ -15,7 +15,7 @@ namespace Nuke.Common.Tools.Source.Tooling
 	[PublicAPI]
 	[ExcludeFromCodeCoverage]
 	[Serializable]
-	public class VBSP : Tools, ISlammin
+	public class VBSP : Abstractions.Tooling, ISlammin
 	{
 
 		public VBSP() : base("vbsp.exe")

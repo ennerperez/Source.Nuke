@@ -3,12 +3,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Interfaces;
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
     /// <summary>
     /// https://developer.valvesoftware.com/wiki/Studiomdl
@@ -16,7 +14,7 @@ namespace Nuke.Common.Tools.Source.Tooling
     [PublicAPI]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class QCC : Tools
+    public class QCC : Abstractions.Tooling
     {
         public QCC() : base("studiomdl.exe")
         {

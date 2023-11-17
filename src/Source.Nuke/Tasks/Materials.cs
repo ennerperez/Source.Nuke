@@ -3,10 +3,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Tooling;
+using Nuke.Source.Tooling;
 using ValveKeyValue;
 
-namespace Nuke.Common.Tools.Source
+namespace Nuke.Source
 {
     public static partial class Tasks
     {
@@ -81,7 +81,7 @@ namespace Nuke.Common.Tools.Source
                     if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
                     var inputPath = Path.Combine(op.Folder, "materials", $"{basetexture}.{ext}");
 
-                    Source(_ => vtf
+                    Abstractions.Tasks.Source(_ => vtf
                         .SetVerbose(op.Verbose)
                         .SetNoMipmaps(nomip == "1")
                         //.SetProcessWorkingDirectory(op.InstallDirectory)
@@ -94,7 +94,7 @@ namespace Nuke.Common.Tools.Source
                             if (!File.Exists(vtfFile)) throw new FileNotFoundException(vtfFile);
                             if (!string.IsNullOrWhiteSpace(bumpmap))
                             {
-                                Source(_ => vtf
+                                Abstractions.Tasks.Source(_ => vtf
                                     .SetVerbose(op.Verbose)
                                     .SetNoMipmaps(nomip == "1")
                                     .EnableNormal()
@@ -107,7 +107,7 @@ namespace Nuke.Common.Tools.Source
 
                             if (!string.IsNullOrWhiteSpace(phong))
                             {
-                                Source(_ => vtf
+                                Abstractions.Tasks.Source(_ => vtf
                                     .SetVerbose(op.Verbose)
                                     .SetNoMipmaps(nomip == "1")
                                     //.EnableNormal()
@@ -120,7 +120,7 @@ namespace Nuke.Common.Tools.Source
 
                             if (!string.IsNullOrWhiteSpace(envmapmask))
                             {
-                                Source(_ => vtf
+                                Abstractions.Tasks.Source(_ => vtf
                                     .SetVerbose(op.Verbose)
                                     .SetNoMipmaps(nomip == "1")
                                     //.EnableNormal()

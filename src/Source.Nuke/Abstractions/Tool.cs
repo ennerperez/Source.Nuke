@@ -5,19 +5,19 @@ using JetBrains.Annotations;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 
-namespace Nuke.Common.Tools.Source
+namespace Nuke.Source.Abstractions
 {
 
 	[PublicAPI]
 	[Serializable]
-	public class Tools : ToolSettings
+	public class Tooling : ToolSettings
 	{
 
-		public Tools()
+		public Tooling()
 		{
 		}
 
-		public Tools(string executable)
+		public Tooling(string executable)
 		{
 			Executable = executable;
 		}

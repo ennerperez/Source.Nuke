@@ -8,9 +8,9 @@ using System.IO.Compression;
 using System.Net.Http;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Interfaces;
+using Nuke.Source.Interfaces;
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
     /// <summary>
     ///
@@ -18,7 +18,7 @@ namespace Nuke.Common.Tools.Source.Tooling
     [PublicAPI]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class DEPOTDOWNLOADER : Tools, IDownloadable, ICredential
+    public class DEPOTDOWNLOADER : Nuke.Source.Abstractions.Tooling, IDownloadable, ICredential
     {
         public DEPOTDOWNLOADER() : base("DepotDownloader.exe")
         {

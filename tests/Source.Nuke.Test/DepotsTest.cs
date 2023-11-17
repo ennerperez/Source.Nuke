@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Reflection;
-using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source;
+using Nuke.Source;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -47,19 +44,9 @@ namespace Source.Nuke.Test
                 });
                 Assert.True(true);
             }
-            catch (ProcessException pe)
-            {
-                var process = (Process2)pe.GetType()
-                    .GetProperty("Process",
-                        BindingFlags.Instance |
-                        BindingFlags.NonPublic |
-                        BindingFlags.Public)?
-                    .GetValue(pe);
-                Assert.False(true, process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
-            }
             catch (Exception e)
             {
-                Assert.False(true, e.Message);
+                Assert.False(true, e.GetMessage());
             }
         }
 
@@ -79,19 +66,9 @@ namespace Source.Nuke.Test
                 });
                 Assert.True(true);
             }
-            catch (ProcessException pe)
-            {
-                var process = (Process2)pe.GetType()
-                    .GetProperty("Process",
-                        BindingFlags.Instance |
-                        BindingFlags.NonPublic |
-                        BindingFlags.Public)?
-                    .GetValue(pe);
-                Assert.False(true, process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
-            }
             catch (Exception e)
             {
-                Assert.False(true, e.Message);
+                Assert.False(true, e.GetMessage());
             }
         }
     }

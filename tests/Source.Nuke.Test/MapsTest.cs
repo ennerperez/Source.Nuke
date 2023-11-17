@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using Nuke.Common.Tooling;
+using Nuke.Source.Enums;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -22,23 +20,58 @@ namespace Source.Nuke.Test
                     options.Verbose = true;
                     options.GameName = "hl2mp";
                     options.DepotDirectory = "depots";
-                    options.File = Path.Combine("assets", "maps", "sdk_background.vmf");
+                    options.File = Path.Combine("Assets", "maps", "sdk_background.vmf");
+                    options.Configuration = Configuration.Fast;
                 });
                 Assert.True(true);
             }
-            catch (ProcessException pe)
+            catch (Exception e)
             {
-                var process = (Process2)pe.GetType()
-                    .GetProperty("Process",
-                        BindingFlags.Instance |
-                        BindingFlags.NonPublic |
-                        BindingFlags.Public)?
-                    .GetValue(pe);
-                Assert.False(true, process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
+                Assert.False(true, e.GetMessage());
+            }
+        }
+
+        [Fact, TestOrder(2)]
+        public void BuildNormalMap()
+        {
+            try
+            {
+                Nuke.Source.Tasks.Maps(options =>
+                {
+                    options.AppId = 243750;
+                    options.Verbose = true;
+                    options.GameName = "hl2mp";
+                    options.DepotDirectory = "depots";
+                    options.File = Path.Combine("Assets", "maps", "sdk_background.vmf");
+                    options.Configuration = Configuration.Normal;
+                });
+                Assert.True(true);
             }
             catch (Exception e)
             {
-                Assert.False(true, e.Message);
+                Assert.False(true, e.GetMessage());
+            }
+        }
+
+        [Fact, TestOrder(3)]
+        public void BuildPublishMap()
+        {
+            try
+            {
+                Nuke.Source.Tasks.Maps(options =>
+                {
+                    options.AppId = 243750;
+                    options.Verbose = true;
+                    options.GameName = "hl2mp";
+                    options.DepotDirectory = "depots";
+                    options.File = Path.Combine("Assets", "maps", "sdk_background.vmf");
+                    options.Configuration = Configuration.Publish;
+                });
+                Assert.True(true);
+            }
+            catch (Exception e)
+            {
+                Assert.False(true, e.GetMessage());
             }
         }
     }

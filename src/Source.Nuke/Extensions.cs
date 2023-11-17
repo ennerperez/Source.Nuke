@@ -3,86 +3,86 @@
 using System;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Interfaces;
+using Nuke.Source.Interfaces;
 
-namespace Nuke.Common.Tools.Source
+namespace Nuke.Source
 {
-	public static class Extensions
-	{
-		#region Verbose
+    public static class Extensions
+    {
+        #region Verbose
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="verbose"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetVerbose<T>(this T toolSettings, bool? verbose) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Verbose = verbose;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="verbose"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetVerbose<T>(this T toolSettings, bool? verbose) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Verbose = verbose;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetVerbose<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Verbose = null;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetVerbose<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Verbose = null;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T EnableVerbose<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Verbose = true;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T EnableVerbose<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Verbose = true;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T DisableVerbose<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Verbose = false;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T DisableVerbose<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Verbose = false;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ToggleVerbose<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Verbose = !toolSettings.Verbose;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ToggleVerbose<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Verbose = !toolSettings.Verbose;
+            return toolSettings;
+        }
 
-		#endregion
+        #endregion
 
         #region InstallDir
 
@@ -94,7 +94,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetInstallDir<T>(this T toolSettings, string installDir) where T :  Tools
+        public static T SetInstallDir<T>(this T toolSettings, string installDir) where T : Abstractions.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.InstallDir = installDir;
@@ -108,7 +108,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetInstallDir<T>(this T toolSettings) where T :  Tools
+        public static T ResetInstallDir<T>(this T toolSettings) where T : Abstractions.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.InstallDir = null;
@@ -117,247 +117,247 @@ namespace Nuke.Common.Tools.Source
 
         #endregion
 
-		#region Skip
+        #region Skip
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="skip"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetSkip<T>(this T toolSettings, bool skip) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Skip = skip;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="skip"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetSkip<T>(this T toolSettings, bool skip) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Skip = skip;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetSkip<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Skip = false;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetSkip<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Skip = false;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T EnableSkip<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Skip = true;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T EnableSkip<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Skip = true;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T DisableSkip<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Skip = false;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T DisableSkip<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Skip = false;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ToggleSkip<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Skip = !toolSettings.Skip;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ToggleSkip<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Skip = !toolSettings.Skip;
+            return toolSettings;
+        }
 
-		#endregion
+        #endregion
 
-		#region Game
+        #region Game
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="game"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetGamePath<T>(this T toolSettings, string game) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Game = game;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="game"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetGamePath<T>(this T toolSettings, string game) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Game = game;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetGame<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Game = null;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetGame<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Game = null;
+            return toolSettings;
+        }
 
-		#endregion
+        #endregion
 
-		#region Game
+        #region Game
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="appId"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetAppId<T>(this T toolSettings, long appId) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.AppId = appId;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="appId"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetAppId<T>(this T toolSettings, long appId) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.AppId = appId;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetAppId<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.AppId = 0;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetAppId<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.AppId = 0;
+            return toolSettings;
+        }
 
-		#endregion
+        #endregion
 
-		#region Input
+        #region Input
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="input"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetInput<T>(this T toolSettings, string input) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Input = input;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="input"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetInput<T>(this T toolSettings, string input) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Input = input;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetInput<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Input = null;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetInput<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Input = null;
+            return toolSettings;
+        }
 
-		#endregion
+        #endregion
 
-		#region Output
+        #region Output
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="stdOutput"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetStdOutput<T>(this T toolSettings, string stdOutput) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.StdOutput = stdOutput;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="stdOutput"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetStdOutput<T>(this T toolSettings, string stdOutput) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.StdOutput = stdOutput;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetStdOutput<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.StdOutput = null;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetStdOutput<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.StdOutput = null;
+            return toolSettings;
+        }
 
-		#endregion
+        #endregion
 
-		#region Callback
+        #region Callback
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <param name="callback"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T SetCallback<T>(this T toolSettings, Action callback) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Callback = callback;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="callback"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetCallback<T>(this T toolSettings, Action callback) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Callback = callback;
+            return toolSettings;
+        }
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="toolSettings"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		[Pure]
-		public static T ResetCallback<T>(this T toolSettings) where T : Tools
-		{
-			toolSettings = toolSettings.NewInstance();
-			toolSettings.Callback = null;
-			return toolSettings;
-		}
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetCallback<T>(this T toolSettings) where T : Abstractions.Tooling
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Callback = null;
+            return toolSettings;
+        }
 
-		#endregion
+        #endregion
 
-		#region Low
+        #region Low
 
         /// <summary>
         ///
@@ -367,7 +367,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetLow<T>(this T toolSettings, bool? low) where T : Tools
+        public static T SetLow<T>(this T toolSettings, bool? low) where T : Abstractions.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Low = low;
@@ -381,7 +381,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetLow<T>(this T toolSettings) where T : Tools
+        public static T ResetLow<T>(this T toolSettings) where T : Abstractions.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Low = null;
@@ -395,7 +395,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T EnableLow<T>(this T toolSettings) where T : Tools
+        public static T EnableLow<T>(this T toolSettings) where T : Abstractions.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Low = true;
@@ -409,7 +409,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T DisableLow<T>(this T toolSettings) where T : Tools
+        public static T DisableLow<T>(this T toolSettings) where T : Abstractions.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Low = false;
@@ -423,7 +423,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ToggleLow<T>(this T toolSettings) where T : Tools
+        public static T ToggleLow<T>(this T toolSettings) where T : Abstractions.Tooling
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Low = !toolSettings.Low;
@@ -442,11 +442,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetThreads<T>(this T toolSettings, ushort threads) where T : Tools
+        public static T SetThreads<T>(this T toolSettings, ushort threads) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.Threads = threads;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Threads = threads;
+            return toolSettings;
         }
 
         /// <summary>
@@ -456,11 +456,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetThreads<T>(this T toolSettings) where T : Tools
+        public static T ResetThreads<T>(this T toolSettings) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.Threads = null;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Threads = null;
+            return toolSettings;
         }
 
         #endregion
@@ -475,11 +475,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetVProject<T>(this T toolSettings, string vproject) where T : Tools
+        public static T SetVProject<T>(this T toolSettings, string vproject) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.VProject = vproject;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.VProject = vproject;
+            return toolSettings;
         }
 
         /// <summary>
@@ -489,11 +489,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetVProject<T>(this T toolSettings) where T : Tools
+        public static T ResetVProject<T>(this T toolSettings) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.VProject = null;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.VProject = null;
+            return toolSettings;
         }
 
         #endregion
@@ -508,11 +508,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetFast<T>(this T toolSettings, bool? fast) where T : Tools
+        public static T SetFast<T>(this T toolSettings, bool? fast) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.Fast = fast;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Fast = fast;
+            return toolSettings;
         }
 
         /// <summary>
@@ -522,11 +522,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetFast<T>(this T toolSettings) where T : Tools
+        public static T ResetFast<T>(this T toolSettings) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.Fast = null;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Fast = null;
+            return toolSettings;
         }
 
         /// <summary>
@@ -536,11 +536,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T EnableFast<T>(this T toolSettings) where T : Tools
+        public static T EnableFast<T>(this T toolSettings) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.Fast = true;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Fast = true;
+            return toolSettings;
         }
 
         /// <summary>
@@ -550,11 +550,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T DisableFast<T>(this T toolSettings) where T : Tools
+        public static T DisableFast<T>(this T toolSettings) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.Fast = false;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Fast = false;
+            return toolSettings;
         }
 
         /// <summary>
@@ -564,11 +564,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ToggleFast<T>(this T toolSettings) where T : Tools
+        public static T ToggleFast<T>(this T toolSettings) where T : Abstractions.Tooling
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.Fast = !toolSettings.Fast;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Fast = !toolSettings.Fast;
+            return toolSettings;
         }
 
         #endregion
@@ -583,11 +583,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetUsingSlammin<T>(this T toolSettings, bool? usingSlammin) where T : Tools, ISlammin
+        public static T SetUsingSlammin<T>(this T toolSettings, bool? usingSlammin) where T : Abstractions.Tooling, ISlammin
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.UsingSlammin = usingSlammin;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.UsingSlammin = usingSlammin;
+            return toolSettings;
         }
 
         /// <summary>
@@ -597,11 +597,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetUsingSlammin<T>(this T toolSettings) where T : Tools, ISlammin
+        public static T ResetUsingSlammin<T>(this T toolSettings) where T : Abstractions.Tooling, ISlammin
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.UsingSlammin = null;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.UsingSlammin = null;
+            return toolSettings;
         }
 
         /// <summary>
@@ -611,11 +611,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T EnableUsingSlammin<T>(this T toolSettings) where T : Tools, ISlammin
+        public static T EnableUsingSlammin<T>(this T toolSettings) where T : Abstractions.Tooling, ISlammin
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.UsingSlammin = true;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.UsingSlammin = true;
+            return toolSettings;
         }
 
         /// <summary>
@@ -625,11 +625,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T DisableUsingSlammin<T>(this T toolSettings) where T : Tools, ISlammin
+        public static T DisableUsingSlammin<T>(this T toolSettings) where T : Abstractions.Tooling, ISlammin
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.UsingSlammin = false;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.UsingSlammin = false;
+            return toolSettings;
         }
 
         /// <summary>
@@ -639,11 +639,11 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ToggleUsingSlammin<T>(this T toolSettings) where T : Tools, ISlammin
+        public static T ToggleUsingSlammin<T>(this T toolSettings) where T : Abstractions.Tooling, ISlammin
         {
-	        toolSettings = toolSettings.NewInstance();
-	        toolSettings.UsingSlammin = !toolSettings.UsingSlammin;
-	        return toolSettings;
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.UsingSlammin = !toolSettings.UsingSlammin;
+            return toolSettings;
         }
 
         #endregion
@@ -660,7 +660,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetUserName<T>(this T toolSettings, string userName) where T : Tools, ICredential
+        public static T SetUserName<T>(this T toolSettings, string userName) where T : Abstractions.Tooling, ICredential
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.UserName = userName;
@@ -674,7 +674,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetUserName<T>(this T toolSettings) where T : Tools, ICredential
+        public static T ResetUserName<T>(this T toolSettings) where T : Abstractions.Tooling, ICredential
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.UserName = null;
@@ -693,7 +693,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T SetPassword<T>(this T toolSettings, string password) where T : Tools, ICredential
+        public static T SetPassword<T>(this T toolSettings, string password) where T : Abstractions.Tooling, ICredential
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Password = password;
@@ -707,7 +707,7 @@ namespace Nuke.Common.Tools.Source
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Pure]
-        public static T ResetPassword<T>(this T toolSettings) where T : Tools, ICredential
+        public static T ResetPassword<T>(this T toolSettings) where T : Abstractions.Tooling, ICredential
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.UserName = null;
@@ -717,6 +717,5 @@ namespace Nuke.Common.Tools.Source
         #endregion
 
         #endregion
-
-	}
+    }
 }

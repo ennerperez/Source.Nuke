@@ -2,13 +2,12 @@
 // ReSharper disable InconsistentNaming
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Interfaces;
+using Nuke.Source.Interfaces;
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
 	/// <summary>
 	/// https://developer.valvesoftware.com/wiki/VRAD
@@ -16,7 +15,7 @@ namespace Nuke.Common.Tools.Source.Tooling
 	[PublicAPI]
 	[ExcludeFromCodeCoverage]
 	[Serializable]
-	public class VRAD : Tools, ISlammin
+	public class VRAD : Abstractions.Tooling, ISlammin
 	{
 
 		public VRAD() : base("vrad.exe")

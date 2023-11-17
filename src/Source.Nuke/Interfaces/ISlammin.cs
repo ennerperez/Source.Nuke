@@ -6,7 +6,7 @@ using System.Net.Http;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 
-namespace Nuke.Common.Tools.Source.Interfaces
+namespace Nuke.Source.Interfaces
 {
 	public interface ISlammin
 	{
@@ -25,14 +25,14 @@ namespace Nuke.Common.Tools.Source.Interfaces
 			MULTI_PLAYER = 2
 		}
 
-		public static void Download(Tools toolsSettings)
+		public static void Download(Abstractions.Tooling tooling)
 		{
 			var urlSp = "https://github.com/alpaka-gaming/SlamminTools/releases/download/v1.6/SlamminToolsSP.zip";
 			var urlMp = "https://github.com/alpaka-gaming/SlamminTools/releases/download/v1.6/SlamminToolsMP.zip";
 
 			var mpGames = new long[] {243750};
-			var mode = mpGames.Contains(toolsSettings.AppId) ? Mode.MULTI_PLAYER : Mode.SINGLE_PLAYER;
-			var binPath = Path.Combine(toolsSettings.Game, "..", "bin");
+			var mode = mpGames.Contains(tooling.AppId) ? Mode.MULTI_PLAYER : Mode.SINGLE_PLAYER;
+			var binPath = Path.Combine(tooling.Game, "..", "bin");
 			var url = mode == Mode.SINGLE_PLAYER ? urlSp : urlMp;
 
 			var localFile = string.Empty;
@@ -61,7 +61,7 @@ namespace Nuke.Common.Tools.Source.Interfaces
 			if (File.Exists(localFile))
 			{
 				ZipFile.ExtractToDirectory(localFile, localDir, true);
-				var files = Directory.GetFiles(Path.Combine(localDir, mode == Mode.MULTI_PLAYER ? "MP" : "SP")).Where(m => m.Contains(Path.GetFileNameWithoutExtension(toolsSettings.Executable) ?? string.Empty)).ToArray();
+				var files = Directory.GetFiles(Path.Combine(localDir, mode == Mode.MULTI_PLAYER ? "MP" : "SP")).Where(m => m.Contains(Path.GetFileNameWithoutExtension(tooling.Executable) ?? string.Empty)).ToArray();
 				foreach (var file in files)
 					File.Move(file, Path.Combine(localDir, Path.GetFileName(file)), true);
 			}

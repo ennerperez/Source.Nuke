@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Assets">
-    <Content Include="assets\**\*.*">
+    <Content Include="Assets\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Net;
-using Nuke.Common.Tools.Source.Tooling;
+using Nuke.Source.Tooling;
 
-namespace Nuke.Common.Tools.Source
+namespace Nuke.Source
 {
     public static partial class Tasks
     {
@@ -35,7 +35,7 @@ namespace Nuke.Common.Tools.Source
 
             if (op.Mode == DepotsMode.STEAM_CMD)
             {
-                Source(_ => new STEAMCMD()
+                Abstractions.Tasks.Source(_ => new STEAMCMD()
                     .SetVerbose(op.Verbose)
                     .SetAppId(op.AppId)
                     .SetUserName(op.SteamCredentials.UserName)
@@ -45,7 +45,7 @@ namespace Nuke.Common.Tools.Source
             }
             else if (op.Mode == DepotsMode.DEPOT_DOWNLOADER)
             {
-                Source(_ => new DEPOTDOWNLOADER()
+                Abstractions.Tasks.Source(_ => new DEPOTDOWNLOADER()
                     .SetVerbose(op.Verbose)
                     .SetAppId(op.AppId)
                     .SetUserName(op.SteamCredentials.UserName)

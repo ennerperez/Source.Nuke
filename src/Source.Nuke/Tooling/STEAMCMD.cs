@@ -5,13 +5,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
 using System.Net.Http;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Source.Interfaces;
+using Nuke.Source.Interfaces;
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
     /// <summary>
     ///
@@ -19,7 +18,7 @@ namespace Nuke.Common.Tools.Source.Tooling
     [PublicAPI]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class STEAMCMD : Tools, IDownloadable, ICredential
+    public class STEAMCMD : Abstractions.Tooling, IDownloadable, ICredential
     {
         public STEAMCMD() : base("steamcmd.exe")
         {

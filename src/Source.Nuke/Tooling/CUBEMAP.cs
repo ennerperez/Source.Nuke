@@ -7,7 +7,7 @@ using System.IO;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
 
-namespace Nuke.Common.Tools.Source.Tooling
+namespace Nuke.Source.Tooling
 {
 	/// <summary>
 	/// https://developer.valvesoftware.com/wiki/Cubemaps
@@ -15,7 +15,7 @@ namespace Nuke.Common.Tools.Source.Tooling
 	[PublicAPI]
 	[ExcludeFromCodeCoverage]
 	[Serializable]
-	public class CUBEMAP : Tools
+	public class CUBEMAP : Nuke.Source.Abstractions.Tooling
 	{
 
 		public CUBEMAP() : base("hl2.exe")
