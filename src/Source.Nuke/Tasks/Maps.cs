@@ -54,6 +54,7 @@ namespace Nuke.Common.Tools.Source
                 .SetVerbose(op.Verbose)
                 .SetAppId(op.AppId)
                 .SetGamePath(Path.GetFullPath(op.GameDirectory))
+                .SetInstallDir(op.InstallDirectory)
                 //
                 .EnableFast()
                 .SetBounce(2)

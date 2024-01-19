@@ -3,19 +3,19 @@ using System.Linq;
 using System.Reflection;
 using Nuke.Common.Tooling;
 using Xunit;
-using Xunit.Microsoft.DependencyInjection.Attributes;
+using Xunit.Extensions.Ordering;
 
-namespace Build.Test
+namespace Source.Nuke.Test
 {
-    [Collection("Assets"), TestCaseOrder(1)]
-    public class Assets
+    [Collection("Assets"), Order(2)]
+    public class AssetsTest
     {
-        [Fact, TestOrder(1)]
+        [Fact, Order(1)]
         public void GenerateMaterials()
         {
             try
             {
-                Nuke.Common.Tools.Source.Tasks.Materials(options =>
+                global::Nuke.Common.Tools.Source.Tasks.Materials(options =>
                 {
                     options.AppId = 243750;
                     options.Verbose = true;
@@ -40,12 +40,12 @@ namespace Build.Test
             }
         }
 
-        [Fact, TestOrder(2)]
+        [Fact, Order(2)]
         public void GenerateModels()
         {
             try
             {
-                Nuke.Common.Tools.Source.Tasks.Models(options =>
+                global::Nuke.Common.Tools.Source.Tasks.Models(options =>
                 {
                     options.AppId = 243750;
                     options.Verbose = true;

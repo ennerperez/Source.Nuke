@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("Enner Pérez")]
 [assembly: AssemblyProduct("Source Nuke")]
-[assembly: AssemblyCopyright("Copyright © 2023")]
+[assembly: AssemblyCopyright("Copyright © 2024")]
 
 [assembly: AssemblyVersion("1.0.0")]
 [assembly: AssemblyFileVersion("1.0.0")]

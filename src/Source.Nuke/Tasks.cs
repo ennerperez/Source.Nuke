@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Force.Crc32;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Source.Interfaces;
+using System.Linq;
 
 namespace Nuke.Common.Tools.Source
 {
 	[PublicAPI]
-	[ExcludeFromCodeCoverage]
 	public static partial class Tasks
 	{
 		public static IReadOnlyCollection<Output> Source(Configure<Tools> configurator)
@@ -44,8 +43,15 @@ namespace Nuke.Common.Tools.Source
 				}
 
 				using var process = ProcessTasks.StartProcess(toolsSettings);
-				process.AssertZeroExitCode();
-				if (!string.IsNullOrWhiteSpace(toolsSettings.StdOutput))
+                try
+                {
+                    process.AssertZeroExitCode();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(process.Output.LastOrDefault().Text, e);
+                }
+                if (!string.IsNullOrWhiteSpace(toolsSettings.StdOutput))
 					File.WriteAllText(toolsSettings.StdOutput, process.Output.StdToText());
 				toolsSettings.Callback?.Invoke();
 				return process.Output;

@@ -4,19 +4,19 @@ using System.Linq;
 using System.Reflection;
 using Nuke.Common.Tooling;
 using Xunit;
-using Xunit.Microsoft.DependencyInjection.Attributes;
+using Xunit.Extensions.Ordering;
 
-namespace Build.Test
+namespace Source.Nuke.Test
 {
-    [Collection("Maps"), TestCaseOrder(3)]
-    public class Maps
+    [Collection("Maps"), Order(3)]
+    public class MapsTest
     {
-        [Fact, TestOrder(1)]
+        [Fact, Order(1)]
         public void BuildFastMap()
         {
             try
             {
-                Nuke.Common.Tools.Source.Tasks.Maps(options =>
+                global::Nuke.Common.Tools.Source.Tasks.Maps(options =>
                 {
                     options.AppId = 243750;
                     options.Verbose = true;

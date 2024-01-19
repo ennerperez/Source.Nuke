@@ -1,39 +1,41 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>disable</ImplicitUsings>
-        <Nullable>disable</Nullable>
-        <RootNamespace>Nuke.Common.Tools.Source</RootNamespace>
-        <NoWarn>CS0649;CS0169</NoWarn>
-        <LangVersion>latest</LangVersion>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <Deterministic>false</Deterministic>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>Nuke.Common.Tools.Source</RootNamespace>
+    <NoWarn>CS0649;CS0169</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Deterministic>false</Deterministic>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Crc32.NET" Version="1.2.0" />
-        <PackageReference Include="Nuke.Common" Version="6.2.1" />
-        <PackageReference Include="ValveKeyValue" Version="0.8.2.162" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Crc32.NET" Version="1.2.0"/>
+    <PackageReference Include="Nuke.Common" Version="8.0.0"/>
+    <PackageReference Include="ValveKeyValue" Version="0.9.0.267" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Include="..\..\icon.png" PackagePath="" Pack="true">
-            <Link>icon.png</Link>
-        </None>
-        <None Include="..\..\CHANGELOG.md" PackagePath="docs" Pack="true">
-            <Link>CHANGELOG.md</Link>
-        </None>
-        <None Include="..\..\LICENSE" PackagePath="docs" Pack="true">
-            <Link>LICENSE</Link>
-        </None>
-        <None Include="..\..\README.md" PackagePath="docs" Pack="true">
-            <Link>README.md</Link>
-        </None>
-    </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icon.png" PackagePath="" Pack="true">
+      <Link>icon.png</Link>
+    </None>
+    <None Include="..\..\CHANGELOG.md" PackagePath="docs" Pack="true">
+      <Link>CHANGELOG.md</Link>
+    </None>
+    <None Include="..\..\LICENSE" PackagePath="docs" Pack="true">
+      <Link>LICENSE</Link>
+    </None>
+    <None Include="..\..\README.md" PackagePath="docs" Pack="true">
+      <Link>README.md</Link>
+    </None>
+  </ItemGroup>
 
-    <PropertyGroup>
-        <PackageIcon>icon.png</PackageIcon>
-    </PropertyGroup>
+  <PropertyGroup>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
 
 </Project>

@@ -55,7 +55,7 @@ namespace Nuke.Common.Tools.Source
 
             var installDirectory = Path.Combine(op.DepotDirectory, op.AppId.ToString());
             if (!Directory.Exists(installDirectory) || !Directory.GetFiles(installDirectory).Any())
-                throw new DirectoryNotFoundException("Depot download was unsuccess");
+                throw new DirectoryNotFoundException("Depot download was unsuccessful");
 
             var gameBinDir = new DirectoryInfo(Path.Combine(installDirectory, op.GameName, "bin"));
             var sourcetestBinDir = new DirectoryInfo(Path.Combine(installDirectory, "sourcetest", "bin"));

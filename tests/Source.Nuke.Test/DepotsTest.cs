@@ -6,16 +6,16 @@ using System.Reflection;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Source;
 using Xunit;
-using Xunit.Microsoft.DependencyInjection.Attributes;
+using Xunit.Extensions.Ordering;
 
-namespace Build.Test
+namespace Source.Nuke.Test
 {
-    [Collection("Depots"), TestCaseOrder(2)]
-    public class Depots
+    [Collection("Depots"), Order(1)]
+    public class DepotsTest
     {
         private NetworkCredential _steamCredentials;
 
-        public Depots()
+        public DepotsTest()
         {
             if (!File.Exists(".env")) return;
             foreach (var line in File.ReadAllLines(".env"))
@@ -31,7 +31,7 @@ namespace Build.Test
             _steamCredentials = new NetworkCredential(steamUsername, steamPassword);
         }
 
-        [Fact, TestOrder(1)]
+        [Fact, Order(1)]
         public void DownloadAppIdWithDepotDownloader()
         {
             try
@@ -63,7 +63,7 @@ namespace Build.Test
             }
         }
 
-        [Fact, TestOrder(2)]
+        [Fact, Order(2)]
         public void DownloadAppIdWithSteamCmd()
         {
             try

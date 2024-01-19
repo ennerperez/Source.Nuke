@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{E7979F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5D067BF5-D0A8-49BC-8EC6-D099AAEADDF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build.Test", "tests\Build.Test\Build.Test.csproj", "{8D5CF879-3279-4BCA-A312-982DE5B21EAC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Source.Nuke.Test", "tests\Source.Nuke.Test\Source.Nuke.Test.csproj", "{8D5CF879-3279-4BCA-A312-982DE5B21EAC}"
 EndProject
 Global
 	GlobalSection(NestedProjects) = preSolution

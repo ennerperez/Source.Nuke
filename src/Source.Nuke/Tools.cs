@@ -9,7 +9,6 @@ namespace Nuke.Common.Tools.Source
 {
 
 	[PublicAPI]
-	[ExcludeFromCodeCoverage]
 	[Serializable]
 	public class Tools : ToolSettings
 	{
@@ -25,12 +24,17 @@ namespace Nuke.Common.Tools.Source
 
 		public string Executable { get; private set; }
 
+        /// <summary>
+        ///
+        /// </summary>
+        [ExcludeFromCodeCoverage]
         public override string ProcessToolPath => Path.Combine(InstallDir, Executable);
 
 		/// <summary>
 		///
 		/// </summary>
-		public override Action<OutputType, string> ProcessCustomLogger => DotNetTasks.DotNetLogger;
+        [ExcludeFromCodeCoverage]
+        public Action<OutputType, string> ProcessCustomLogger => DotNetTasks.DotNetLogger;
 
 		/// <summary>
 		/// Turn on verbose output (also shows more command-line options). Use without any other parameters.
