@@ -62,7 +62,7 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var projectInfo = Solution.GetProjects("*.Nuke").FirstOrDefault();
+            var projectInfo = Solution.GetAllProjects("*.Nuke").FirstOrDefault();
             if (projectInfo != null)
             {
                 var version = "1.0.0";
