@@ -18,16 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\icon.png" PackagePath="" Pack="true">
+    <None Include="..\..\icon.png" PackagePath="\" Pack="true">
       <Link>icon.png</Link>
     </None>
-    <None Include="..\..\CHANGELOG.md" PackagePath="docs" Pack="true">
-      <Link>CHANGELOG.md</Link>
-    </None>
-    <None Include="..\..\LICENSE" PackagePath="docs" Pack="true">
+    <None Include="..\..\LICENSE" PackagePath="\" Pack="true">
       <Link>LICENSE</Link>
     </None>
-    <None Include="..\..\README.md" PackagePath="docs" Pack="true">
+    <None Include="..\..\README.md" PackagePath="\" Pack="true">
       <Link>README.md</Link>
     </None>
   </ItemGroup>
