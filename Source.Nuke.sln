@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9F625ABB-51F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Source.Nuke", "src\Source.Nuke\Source.Nuke.csproj", "{41FE72E8-7E73-4960-AC48-839E79E22A74}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{3D8AD72F-D893-4B15-8748-C1E55977AC79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", ".build\_build.csproj", "{3D8AD72F-D893-4B15-8748-C1E55977AC79}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{E7979F36-DB89-4CB1-9E66-2EA2195502A9}"
 EndProject
