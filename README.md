@@ -1,6 +1,6 @@
 ![logo](icon.png)
 
-# EFCore Tool Nuke
+# Source SDK Tools for Nuke
 
 ---------------------------------------
 
