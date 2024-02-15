@@ -35,6 +35,9 @@ namespace Nuke.Common.Tools.Source
             );
 
             var bspFile = Path.ChangeExtension(op.File, "bsp");
+            if (string.IsNullOrWhiteSpace(bspFile) || !File.Exists(bspFile))
+                throw new FileNotFoundException(bspFile);
+
             Source(_ => new VVIS()
                 //.SetProcessWorkingDirectory(op.InstallDirectory)
                 .SetVerbose(op.Verbose)
