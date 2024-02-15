@@ -88,7 +88,7 @@ namespace Nuke.Common.Tools.Source
                         .SetInstallDir(op.InstallDirectory)
                         .SetInput(inputPath)
                         .SetOutput(outputPath)
-                        .SetCallback(() =>
+                        .SetCallback((o) =>
                         {
                             var vtfFile = Path.Combine(op.GameDirectory, "materials", $"{basetexture}.vtf");
                             if (!File.Exists(vtfFile)) throw new FileNotFoundException(vtfFile);

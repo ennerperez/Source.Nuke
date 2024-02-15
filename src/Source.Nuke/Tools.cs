@@ -4,6 +4,7 @@ using System.IO;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using System.Collections.Generic;
 
 namespace Nuke.Common.Tools.Source
 {
@@ -64,10 +65,10 @@ namespace Nuke.Common.Tools.Source
 		/// </summary>
 		public virtual string StdOutput { get; internal set; }
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual Action Callback { get; internal set; }
+        /// <summary>
+        ///
+        /// </summary>
+        public virtual Action<IReadOnlyCollection<Output>> Callback { get; internal set; }
 
 		/// <summary>
 		/// Run as an idle-priority process.

@@ -4,6 +4,7 @@ using System;
 using JetBrains.Annotations;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Source.Interfaces;
+using System.Collections.Generic;
 
 namespace Nuke.Common.Tools.Source
 {
@@ -334,7 +335,7 @@ namespace Nuke.Common.Tools.Source
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
 		[Pure]
-		public static T SetCallback<T>(this T toolSettings, Action callback) where T : Tools
+		public static T SetCallback<T>(this T toolSettings, Action<IReadOnlyCollection<Output>> callback) where T : Tools
 		{
 			toolSettings = toolSettings.NewInstance();
 			toolSettings.Callback = callback;

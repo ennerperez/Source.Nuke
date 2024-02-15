@@ -53,7 +53,7 @@ namespace Nuke.Common.Tools.Source
                 }
                 if (!string.IsNullOrWhiteSpace(toolsSettings.StdOutput))
 					File.WriteAllText(toolsSettings.StdOutput, process.Output.StdToText());
-				toolsSettings.Callback?.Invoke();
+				toolsSettings.Callback?.Invoke(process.Output);
 				return process.Output;
 			}
 			return null;
