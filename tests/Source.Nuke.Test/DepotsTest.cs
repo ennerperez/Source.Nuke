@@ -1,34 +1,22 @@
-﻿using System;
-using System.IO;
+﻿using Build.Test.Fixtures;
+using System.Diagnostics.CodeAnalysis;
+using System;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Source;
 using Xunit;
+using Xunit.Abstractions;
 using Xunit.Extensions.Ordering;
 
 namespace Source.Nuke.Test
 {
     [Collection("Depots"), Order(1)]
-    public class DepotsTest
+    public class DepotsTest : Abstracts.Test
     {
-        private NetworkCredential _steamCredentials;
 
-        public DepotsTest()
+        public DepotsTest([NotNull] ITestOutputHelper testOutputHelper, [NotNull] TestFixture fixture) : base(testOutputHelper, fixture)
         {
-            if (!File.Exists(".env")) return;
-            foreach (var line in File.ReadAllLines(".env"))
-            {
-                var parts = line.Split('=', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length != 2) continue;
-                Environment.SetEnvironmentVariable(parts[0], parts[1]);
-            }
-
-            var steamUsername = Environment.GetEnvironmentVariable("STEAM_USERNAME");
-            var steamPassword = Environment.GetEnvironmentVariable("STEAM_PASSWORD");
-
-            _steamCredentials = new NetworkCredential(steamUsername, steamPassword);
         }
 
         [Fact, Order(1)]
@@ -43,7 +31,7 @@ namespace Source.Nuke.Test
                     options.Mode = Tasks.DepotsMode.DEPOT_DOWNLOADER;
                     options.GameName = "hl2mp";
                     options.DepotDirectory = "depots";
-                    options.SteamCredentials = _steamCredentials;
+                    options.SteamCredentials = TestFixture.SteamCredentials;
                 });
                 Assert.True(true);
             }
@@ -55,11 +43,11 @@ namespace Source.Nuke.Test
                         BindingFlags.NonPublic |
                         BindingFlags.Public)?
                     .GetValue(pe);
-                Assert.False(true, process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
+                Assert.Fail(process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
             }
             catch (Exception e)
             {
-                Assert.False(true, e.Message);
+                Assert.Fail(e.Message);
             }
         }
 
@@ -75,7 +63,7 @@ namespace Source.Nuke.Test
                     options.Mode = Tasks.DepotsMode.STEAM_CMD;
                     options.GameName = "hl2mp";
                     options.DepotDirectory = "depots";
-                    options.SteamCredentials = _steamCredentials;
+                    options.SteamCredentials = TestFixture.SteamCredentials;
                 });
                 Assert.True(true);
             }
@@ -87,12 +75,13 @@ namespace Source.Nuke.Test
                         BindingFlags.NonPublic |
                         BindingFlags.Public)?
                     .GetValue(pe);
-                Assert.False(true, process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
+                Assert.Fail(process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
             }
             catch (Exception e)
             {
-                Assert.False(true, e.Message);
+                Assert.Fail(e.Message);
             }
         }
+
     }
 }

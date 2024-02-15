@@ -1,15 +1,23 @@
+using Build.Test.Fixtures;
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Linq;
 using System.Reflection;
 using Nuke.Common.Tooling;
 using Xunit;
+using Xunit.Abstractions;
 using Xunit.Extensions.Ordering;
 
 namespace Source.Nuke.Test
 {
     [Collection("Assets"), Order(2)]
-    public class AssetsTest
+    public class AssetsTest : Abstracts.Test
     {
+
+        public AssetsTest([NotNull] ITestOutputHelper testOutputHelper, [NotNull] TestFixture fixture) : base(testOutputHelper, fixture)
+        {
+        }
+
         [Fact, Order(1)]
         public void GenerateMaterials()
         {
@@ -32,11 +40,11 @@ namespace Source.Nuke.Test
                         BindingFlags.NonPublic |
                         BindingFlags.Public)?
                     .GetValue(pe);
-                Assert.False(true, process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
+                Assert.Fail(process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
             }
             catch (Exception e)
             {
-                Assert.False(true, e.Message);
+                Assert.Fail(e.Message);
             }
         }
 
@@ -62,12 +70,13 @@ namespace Source.Nuke.Test
                         BindingFlags.NonPublic |
                         BindingFlags.Public)?
                     .GetValue(pe);
-                Assert.False(true, process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
+                Assert.Fail(process != null ? string.Join(Environment.NewLine, process?.Output.ToArray()) : pe.Message);
             }
             catch (Exception e)
             {
-                Assert.False(true, e.Message);
+                Assert.Fail(e.Message);
             }
         }
+
     }
 }
