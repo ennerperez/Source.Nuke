@@ -43,7 +43,7 @@ namespace Nuke.Common.Tools.Source.Tooling
 				.Add("-nosound")
 				.Add("+mat_specular {value}", MatSpecular)
 				.Add("+mat_hdr_level {value}", MatHdrLevel)
-				.Add("+map {value}", Input)
+				.Add("+map {value}", Path.GetFileNameWithoutExtension(Input))
 				.Add("-game {value}", Game)
 				.Add("-buildcubemaps");
 			return base.ConfigureProcessArguments(arguments);
