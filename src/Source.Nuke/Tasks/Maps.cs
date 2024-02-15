@@ -14,7 +14,7 @@ namespace Nuke.Common.Tools.Source
             public bool Verbose { get; set; }
             public string DepotDirectory { get; set; }
             public string GameName { get; set; }
-            public int AppId { get; set; }
+            public long AppId { get; set; }
         }
 
         // ReSharper disable once CognitiveComplexity
