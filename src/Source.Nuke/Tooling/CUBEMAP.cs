@@ -13,7 +13,6 @@ namespace Nuke.Common.Tools.Source.Tooling
 	/// https://developer.valvesoftware.com/wiki/Cubemaps
 	/// </summary>
 	[PublicAPI]
-	[ExcludeFromCodeCoverage]
 	[Serializable]
 	public class CUBEMAP : Tools
 	{

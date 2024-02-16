@@ -17,7 +17,6 @@ namespace Nuke.Common.Tools.Source.Tooling
     ///
     /// </summary>
     [PublicAPI]
-    [ExcludeFromCodeCoverage]
     [Serializable]
     public class STEAMCMD : Tools, IDownloadable, ICredential
     {

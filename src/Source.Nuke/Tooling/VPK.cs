@@ -12,7 +12,6 @@ namespace Nuke.Common.Tools.Source.Tooling
 	/// https://developer.valvesoftware.com/wiki/VPK
 	/// </summary>
 	[PublicAPI]
-	[ExcludeFromCodeCoverage]
 	[Serializable]
 	public class VPK : Tools
 	{

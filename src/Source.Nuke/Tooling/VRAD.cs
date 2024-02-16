@@ -14,7 +14,6 @@ namespace Nuke.Common.Tools.Source.Tooling
 	/// https://developer.valvesoftware.com/wiki/VRAD
 	/// </summary>
 	[PublicAPI]
-	[ExcludeFromCodeCoverage]
 	[Serializable]
 	public class VRAD : Tools, ISlammin
 	{

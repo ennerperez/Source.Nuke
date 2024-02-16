@@ -14,7 +14,6 @@ namespace Nuke.Common.Tools.Source.Tooling
     /// https://developer.valvesoftware.com/wiki/Studiomdl
     /// </summary>
     [PublicAPI]
-    [ExcludeFromCodeCoverage]
     [Serializable]
     public class QCC : Tools
     {

@@ -13,7 +13,6 @@ namespace Nuke.Common.Tools.Source.Tooling
 	/// https://developer.valvesoftware.com/wiki/BSPZIP
 	/// </summary>
 	[PublicAPI]
-	[ExcludeFromCodeCoverage]
 	[Serializable]
 	public class PACK : Tools
 	{

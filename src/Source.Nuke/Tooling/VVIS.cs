@@ -13,7 +13,6 @@ namespace Nuke.Common.Tools.Source.Tooling
 	/// https://developer.valvesoftware.com/wiki/VVIS
 	/// </summary>
 	[PublicAPI]
-	[ExcludeFromCodeCoverage]
 	[Serializable]
 	public class VVIS : Tools, ISlammin
 	{
