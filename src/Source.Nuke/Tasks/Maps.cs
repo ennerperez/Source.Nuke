@@ -1,8 +1,10 @@
 ﻿using Nuke.Common.Tooling;
+using Nuke.Common.Tools.Source.Formats;
 using System;
 using System.IO;
 using Nuke.Common.Tools.Source.Tooling;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Nuke.Common.Tools.Source
@@ -89,6 +91,21 @@ namespace Nuke.Common.Tools.Source
                     .SetInput(bspGameTargetFile)
                 );
 
+                var unpackDir = System.IO.Path.GetTempPath() + Guid.NewGuid();
+                Source(_ => new UNPACK()
+                    //.SetProcessWorkingDirectory(op.InstallDirectory)
+                    .SetVerbose(op.Verbose)
+                    .SetAppId(op.AppId)
+                    .SetGamePath(Path.GetFullPath(op.GameDirectory))
+                    .SetInstallDir(op.InstallDirectory)
+                    .SetInput(Path.GetFullPath(bspGameTargetFile))
+                    .SetOutputDir(unpackDir)
+                    .SetInput(bspGameTargetFile)
+                );
+                var bspFileData = new BSP(new FileInfo(bspGameTargetFile), Path.GetFullPath(op.GameDirectory));
+                bspFileData.findBspPakDependencies(unpackDir);
+
+
                 var bspzipLogs = Path.ChangeExtension(bspGameTargetFile, "log");
                 Source(_ => new PACK()
                     //.SetProcessWorkingDirectory(op.InstallDirectory)
@@ -129,5 +146,32 @@ namespace Nuke.Common.Tools.Source
                 File.Move(bspGameTargetFile, bspFile, true);
             }
         }
+
+        // public static void UnpackBSP(string bspPath, string unpackDir)
+        // {
+        //     // unpacks the pak file and extracts it to a temp location
+        //
+        //     /* info: vbsp.exe creates files in the pak file that may have
+        //      * dependencies that are not listed anywhere else, as is the
+        //      * case for water materials. We use this method to extract the
+        //      * pak file to a temp folder and read the dependencies of its files. */
+        //
+        //     string arguments = "-extractfiles \"$bspold\" \"$dir\"";
+        //     arguments = arguments.Replace("$bspold", bspPath);
+        //     arguments = arguments.Replace("$dir", unpackDir);
+        //
+        //     var startInfo = new ProcessStartInfo(bspZip, arguments);
+        //     startInfo.UseShellExecute = false;
+        //     startInfo.CreateNoWindow = true;
+        //     startInfo.RedirectStandardOutput = true;
+        //     startInfo.EnvironmentVariables["VPROJECT"] = gameFolder;
+        //
+        //     var p = new Process { StartInfo = startInfo };
+        //     p.Start();
+        //     string output = p.StandardOutput.ReadToEnd();
+        //
+        //     p.WaitForExit();
+        //
+        // }
     }
 }
