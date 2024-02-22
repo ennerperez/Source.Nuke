@@ -19,17 +19,19 @@ namespace Source.Nuke.Test
         {
         }
 
-        [Fact, Order(1)]
-        public void DownloadAppIdWithDepotDownloader()
+        [Theory, Order(1)]
+        [InlineData(243730, "hl2")]
+        [InlineData(243750, "hl2mp")]
+        public void DepotDownloader(long appId, string gameName)
         {
             try
             {
                 Tasks.Depots(options =>
                 {
-                    options.AppId = 243750;
+                    options.AppId = appId;
                     options.Verbose = true;
                     options.Mode = Tasks.DepotsMode.DEPOT_DOWNLOADER;
-                    options.GameName = "hl2mp";
+                    options.GameName = gameName;
                     options.DepotDirectory = "depots";
                     options.SteamCredentials = TestFixture.SteamCredentials;
                 });
@@ -51,17 +53,19 @@ namespace Source.Nuke.Test
             }
         }
 
-        [Fact, Order(2)]
-        public void DownloadAppIdWithSteamCmd()
+        [Theory, Order(2)]
+        [InlineData(243730, "hl2")]
+        [InlineData(243750, "hl2mp")]
+        public void SteamDownloader(long appId, string gameName)
         {
             try
             {
                 Tasks.Depots(options =>
                 {
-                    options.AppId = 243730;
+                    options.AppId = appId;
                     options.Verbose = true;
                     options.Mode = Tasks.DepotsMode.STEAM_CMD;
-                    options.GameName = "hl2mp";
+                    options.GameName = gameName;
                     options.DepotDirectory = "depots";
                     options.SteamCredentials = TestFixture.SteamCredentials;
                 });
@@ -82,6 +86,5 @@ namespace Source.Nuke.Test
                 Assert.Fail(e.Message);
             }
         }
-
     }
 }
