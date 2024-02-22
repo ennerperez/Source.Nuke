@@ -133,6 +133,9 @@ namespace Nuke.Common.Tools.Source
 
                             if (file.Definition.Exists)
                                 File.Copy(file.Definition.FullName, Path.Combine(output, file.Definition.Name), true);
+
+                            File.Copy(vtfFile, Path.Combine(file.Definition.Directory.FullName, Path.GetFileName(vtfFile)), true);
+
                         })
                     );
                 }

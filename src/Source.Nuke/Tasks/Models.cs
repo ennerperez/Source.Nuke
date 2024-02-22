@@ -49,6 +49,14 @@ namespace Nuke.Common.Tools.Source
                     .SetGamePath(Path.GetFullPath(op.GameDirectory))
                     .SetInput(file.FullName)
                     .SetOutput(relativeOutputPath)
+                    .SetCallback((o) =>
+                    {
+                        var name = Path.GetFileNameWithoutExtension(file.Name);
+                        var files = Directory.GetFiles(Path.Combine(outputPath, name), $"{name}*");
+                        var folder = file.Directory.FullName;
+                        foreach (var item in files)
+                            File.Copy(item, Path.Combine(folder, Path.GetFileName(item)), true);
+                    })
                 );
             }
         }
