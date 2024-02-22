@@ -1,11 +1,14 @@
-﻿using Nuke.Common.Tooling;
+﻿using Microsoft.Win32;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Source.Formats;
 using System;
 using System.IO;
 using Nuke.Common.Tools.Source.Tooling;
+using Nuke.Common.Utilities.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ValveKeyValue;
 
 namespace Nuke.Common.Tools.Source
 {
@@ -20,8 +23,125 @@ namespace Nuke.Common.Tools.Source
             public string DepotDirectory { get; set; }
             public string GameName { get; set; }
             public long AppId { get; set; }
-
             public bool Fast { get; set; }
+            public bool Slammin { get; set; } = true;
+
+            public List<string> GetSourceDirectories(bool verbose = true)
+            {
+                var sourceDirectories = new List<string>();
+                var gameInfoPath = Path.Combine(GameDirectory, "gameinfo.txt");
+                var rootPath = Directory.GetParent(GameDirectory).ToString();
+
+                if (!System.IO.File.Exists(gameInfoPath))
+                {
+                    Trace.TraceError($"Couldn't find gameinfo.txt at {gameInfoPath}");
+                    return new();
+                }
+
+                var fileStream = System.IO.File.OpenRead(gameInfoPath);
+                var gameInfo = KVSerializer.Create(KVSerializationFormat.KeyValues1Text).Deserialize(fileStream);
+
+                //var gameInfo = new KV.FileData(gameInfoPath).headnode.GetFirstByName("GameInfo");
+                if (gameInfo == null)
+                {
+                    Trace.TraceInformation($"Failed to parse GameInfo: {gameInfo}");
+                    Trace.TraceError($"Failed to parse GameInfo, did not find GameInfo block");
+                    return new();
+                }
+
+                //var searchPaths = gameInfo.GetFirstByName("FileSystem")?.GetFirstByName("SearchPaths");
+                var searchPaths = gameInfo["FileSystem"]?["SearchPaths"];
+                if (searchPaths == null)
+                {
+                    Trace.TraceInformation($"Failed to parse GameInfo: {gameInfo}");
+                    Trace.TraceError($"Failed to parse GameInfo, did not find GameInfo block");
+                    return new();
+                }
+
+                var collection = searchPaths.AsEnumerable<KVObject>().Select(m => new KeyValuePair<string, string>(m.Name, m.Value.ToString()));
+                foreach (var searchPath in collection)
+                {
+                    // ignore unsearchable paths. TODO: will need to remove .vpk from this check if we add support for packing from assets within vpk files
+                    if (searchPath.Value.Contains("|") && !searchPath.Value.Contains("|gameinfo_path|") || searchPath.Value.Contains(".vpk")) continue;
+
+                    // wildcard paths
+                    if (searchPath.Value.Contains("*"))
+                    {
+                        var fullPath = searchPath.Value;
+                        if (fullPath.Contains(("|gameinfo_path|")))
+                        {
+                            var newPath = searchPath.Value.Replace("*", "").Replace("|gameinfo_path|", "");
+                            fullPath = Path.GetFullPath(GameDirectory + "\\" + newPath.TrimEnd('\\'));
+                        }
+                        if (Path.IsPathRooted(fullPath.Replace("*", "")))
+                        {
+                            fullPath = fullPath.Replace("*", "");
+                        }
+                        else
+                        {
+                            var newPath = fullPath.Replace("*", "");
+                            fullPath = Path.GetFullPath(rootPath + "\\" + newPath.TrimEnd('\\'));
+                        }
+
+                        if (verbose)
+                            Trace.TraceInformation("Found wildcard path: {0}", fullPath);
+
+                        try
+                        {
+                            var directories = Directory.GetDirectories(fullPath);
+                            sourceDirectories.AddRange(directories);
+                        }
+                        catch { }
+                    }
+                    else if (searchPath.Value.Contains("|gameinfo_path|"))
+                    {
+                        var fullPath = GameDirectory;
+
+                        if (verbose)
+                            Trace.TraceInformation("Found search path: {0}", fullPath);
+
+                        sourceDirectories.Add(fullPath);
+                    }
+                    else if (Directory.Exists(searchPath.Value))
+                    {
+                        if (verbose)
+                            Trace.TraceInformation("Found search path: {0}", searchPath);
+
+                        sourceDirectories.Add(searchPath.Value);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var fullPath = Path.GetFullPath(rootPath + "\\" + searchPath.Value.TrimEnd('\\'));
+
+                            if (verbose)
+                                Trace.TraceInformation("Found search path: {0}", fullPath);
+
+                            sourceDirectories.Add(fullPath);
+                        }
+                        catch (Exception e)
+                        {
+                            Trace.TraceInformation("Failed to find search path: " + e);
+                            Trace.TraceWarning($"Search path invalid: {rootPath + "\\" + searchPath.Value.TrimEnd('\\')}");
+                        }
+                    }
+                }
+
+                // find Chaos engine game mount paths
+                // var mountedDirectories = GetMountedGamesSourceDirectories(gameInfo, Path.Combine(GameDirectory, "cfg", "mounts.kv"));
+                // if (mountedDirectories != null)
+                // {
+                //     sourceDirectories.AddRange(mountedDirectories);
+                //     foreach (var directory in mountedDirectories)
+                //     {
+                //         Trace.TraceInformation($"Found mounted search path: {directory}");
+                //     }
+                // }
+
+                return sourceDirectories.Distinct().ToList();
+            }
+
         }
 
         // ReSharper disable once CognitiveComplexity
@@ -40,7 +160,7 @@ namespace Nuke.Common.Tools.Source
                 .SetFast(op.Fast)
                 //
                 .SetInput(op.File)
-                .EnableUsingSlammin()
+                .SetUsingSlammin(op.Slammin)
             );
 
             var bspFile = Path.ChangeExtension(op.File, "bsp");
@@ -91,7 +211,7 @@ namespace Nuke.Common.Tools.Source
                     .SetInput(bspGameTargetFile)
                 );
 
-                var unpackDir = System.IO.Path.GetTempPath() + Guid.NewGuid();
+                var unpackDir = Path.GetTempPath() + Guid.NewGuid();
                 Source(_ => new UNPACK()
                     //.SetProcessWorkingDirectory(op.InstallDirectory)
                     .SetVerbose(op.Verbose)
@@ -104,6 +224,12 @@ namespace Nuke.Common.Tools.Source
                 );
                 var bspFileData = new BSP(new FileInfo(bspGameTargetFile), Path.GetFullPath(op.GameDirectory));
                 bspFileData.findBspPakDependencies(unpackDir);
+
+                var sourceDirectories = new List<string>();
+                var sourceDirs = op.GetSourceDirectories(true);
+                // PAK.GetSourceDirectories();
+                // var pakfile = new PAK(bspFileData, sourceDirectories, includeFiles, excludeFiles, excludeDirs,
+                //     excludedVpkFiles, outputFile, noswvtx);
 
 
                 var bspzipLogs = Path.ChangeExtension(bspGameTargetFile, "log");
@@ -120,7 +246,7 @@ namespace Nuke.Common.Tools.Source
                         if (File.Exists(bspzipLogs))
                             content = File.ReadAllLines(bspzipLogs).Skip(3).Where(s => !s.EndsWith(".vhv"));
                         else
-                            content = o.Select(m=> m.Text).Skip(3).Where(s => !s.EndsWith(".vhv"));
+                            content = o.Select(m => m.Text).Skip(3).Where(s => !s.EndsWith(".vhv"));
                         File.WriteAllLines(Path.ChangeExtension(bspGameTargetFile, "tmp"), content);
                         File.Move(Path.ChangeExtension(bspGameTargetFile, "tmp"), Path.ChangeExtension(bspGameTargetFile, "log"), true);
                     })
@@ -137,7 +263,7 @@ namespace Nuke.Common.Tools.Source
                     .SetCallback((o) =>
                     {
 #if !DEBUG
-						if (File.Exists(bspzipLogs)) File.Delete(bspzipLogs);
+                        if (File.Exists(bspzipLogs)) File.Delete(bspzipLogs);
 #endif
                         File.Move(Path.ChangeExtension(bspGameTargetFile, "bzp"), Path.ChangeExtension(bspGameTargetFile, "bsp"), true);
                     })

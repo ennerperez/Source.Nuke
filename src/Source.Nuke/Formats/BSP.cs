@@ -13,183 +13,6 @@ namespace Nuke.Common.Tools.Source.Formats
 
 	internal class BSP
     {
-        static class Keys
-        {
-            public static IEnumerable<string> vmfSoundKeys = new []
-            {
-                "breaksound",
-                "closesound",
-                "gassound",
-                "gustsound",
-                "locked_sound",
-                "message",
-                "messagesound",
-                "movementsound",
-                "movepingsound",
-                "movesound",
-                "noise1",
-                "noise2",
-                "puntsound",
-                "reversalsoundlarge",
-                "reversalsoundmedium",
-                "reversalsoundsmall",
-                "slidesoundback",
-                "slidesoundfwd",
-                "soundcloseoverride",
-                "soundlockedoverride",
-                "soundmoveoverride",
-                "soundopenoverride",
-                "soundunlockedoverride",
-                "startclosesound",
-                "startsound",
-                "stopsound",
-                "unlocked_sound",
-                "point_allies_capsound",
-                "point_axis_capsound",
-                "point_resetsound",
-                "fireendsound",
-                "firestartsound",
-                "flysound",
-                "incomingsound",
-                "launchsound",
-                "pulsefiresound",
-                "rotatesound",
-                "rotatestartsound",
-                "rotatestopsound",
-                "team_capsound_0",
-                "team_capsound_2",
-                "team_capsound_3",
-                "disablesound",
-                "m_SoundName",
-                "commentaryfile",
-                "commentaryfile_nohdr",
-            };
-            public static IEnumerable<string> vmfModelKeys = new []
-            {
-                "model",
-                "shootmodel",
-                "point_allies_model",
-                "point_axis_model",
-                "point_reset_model",
-                "missilemodel",
-                "team_model_0",
-                "team_model_2",
-                "team_model_3",
-                "flag_model",
-                "plymodel",
-                "powerup_model",
-                "swapmodel",
-            };
-            public static IEnumerable<string> vmfMaterialKeys => new[]
-            {
-                "material",
-                "texture",
-                "ropematerial",
-                "overlaymaterial",
-                "point_hud_icon_neutral",
-                "point_hud_icon_axis",
-                "point_hud_icon_allies",
-                "point_hud_icon_timercap",
-                "point_hud_icon_bombed",
-                "spritename",
-                "team_icon_0",
-                "team_icon_2",
-                "team_icon_3",
-                "team_overlay_0",
-                "team_overlay_2",
-                "team_overlay_3",
-                "team_base_icon_2",
-                "team_base_icon_3",
-                "overlaymaterial",
-                "particletrailmaterial",
-                "overlayname1",
-                "overlayname2",
-                "overlayname3",
-                "overlayname4",
-                "overlayname5",
-                "overlayname6",
-                "overlayname7",
-                "overlayname8",
-                "overlayname9",
-                "overlayname10",
-                "font",
-            };
-            public static IEnumerable<string> vmtTextureKeyWords = new []
-            {
-                "$ambientocclusiontexture",
-                "$basetexture",
-                "$basetexture2",
-                "$basetexture3",
-                "$basetexture4",
-                "$decaltexture",
-                "$blendmodulatetexture",
-                "$bumpmap",
-                "$bumpmap2",
-                "$bumpmask",
-                "$cloudalphatexture",
-                "$detail",
-                "$detail2",
-                "$tintmasktexture",
-                "$masks",
-                "$masks1",
-                "$masks2",
-                "$dudvmap",
-                "$envmap",
-                "$envmapmask",
-                "$envmapmask2",
-                "$flowmap",
-                "$flowbounds",
-                "$flow_noise_texture",
-                "$emissiveblendtexture",
-                "$emissiveblendbasetexture",
-                "$emissiveblendflowtexture",
-                "$fleshbordertexture1d",
-                "$fleshcubetexture",
-                "$fleshinteriornoisetexture",
-                "$fleshinteriortexture",
-                "$fleshnormaltexture",
-                "$fleshsubsurfacetexture",
-                "$hdrbasetexture",
-                "$hdrcompressedtexture",
-                "$lightwarptexture",
-                "$material",
-                "$normalmap",
-                "$fresnelrangestexture",
-                "$phongexponenttexture",
-                "$phongwarptexture",
-                "$reflecttexture",
-                "$refracttexture",
-                "$refracttinttexture",
-                "$selfillummask",
-                "$selfillumtexture",
-                "$texture",
-                "$texture2",
-                "$worldspacetint",
-                "$worldspacetype",
-                "$emissiveBlendTexture",
-                "$emissiveBlendBaseTexture",
-                "$emissiveBlendFlowTexture",
-                "%tooltexture",
-                "srgb?$basetexture",
-                "$iris",
-                "$ambientoccltexture",
-                "$mraotexture",
-                "$emissiontexture",
-                "$portalmasktexture",
-                "$portalcolortexture",
-            };
-            public static IEnumerable<string> vmtMaterialKeyWords = new []
-            {
-                "$bottommaterial",
-                "$crackmaterial",
-                "$fallbackmaterial",
-                "$underwateroverlay",
-                "include",
-                "material",
-            };
-
-        }
-
         private FileStream bsp;
         private BinaryReader reader;
         private KeyValuePair<int, int>[] offsets; // offset/length
@@ -740,8 +563,7 @@ namespace Nuke.Common.Tools.Source.Formats
             var io = property.Split("\u001b");
             if (io.Length != 5)
             {
-                //CompilePalLogger.LogCompileError($"Failed to decode IO, ignoring: {property}\n", new Error($"Failed to decode IO, ignoring: {property}\n", ErrorSeverity.Warning));
-                throw new OperationCanceledException($"Failed to decode IO, ignoring: {property}\n");
+                System.Diagnostics.Trace.TraceWarning($"Failed to decode IO, ignoring: {property}");
                 return null;
             }
 
@@ -758,8 +580,7 @@ namespace Nuke.Common.Tools.Source.Formats
                     var splitIo = parameter.Split(':');
                     if (splitIo.Length < 3)
                     {
-                        //CompilePalLogger.LogCompileError($"Failed to decode AddOutput, format may be incorrect: {property}\n", new Error($"Failed to decode AddOutput, format may be incorrect: {property}\n", ErrorSeverity.Warning));
-                        throw new OperationCanceledException($"Failed to decode AddOutput, format may be incorrect: {property}\n");
+                        System.Diagnostics.Trace.TraceWarning($"Failed to decode AddOutput, format may be incorrect: {property}");
                         return null;
                     }
 
@@ -828,10 +649,7 @@ namespace Nuke.Common.Tools.Source.Formats
 
             if(value == null)
             {
-                // CompilePalLogger.LogCompileError($"KVSerializer.Deserialize returned null: {vmtline}",
-                //     new Error($"KVSerializer.Deserialize returned null: {vmtline}", ErrorSeverity.Error));
-                // return "";
-                throw new OperationCanceledException($"KVSerializer.Deserialize returned null: {vmtline}");
+                System.Diagnostics.Trace.TraceError($"KVSerializer.Deserialize returned null: {vmtline}");
                 return string.Empty;
             }
 
