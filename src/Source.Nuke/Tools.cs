@@ -87,6 +87,7 @@ namespace Nuke.Common.Tools.Source
 
 		public virtual bool? Fast { get; internal set; }
 		public virtual bool Skip { get; internal set; }
+        public Func<Tools, IReadOnlyCollection<Output>> Method { get; set; }
 
-	}
+    }
 }

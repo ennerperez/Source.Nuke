@@ -26,122 +26,6 @@ namespace Nuke.Common.Tools.Source
             public bool Fast { get; set; }
             public bool Slammin { get; set; } = true;
 
-            public List<string> GetSourceDirectories(bool verbose = true)
-            {
-                var sourceDirectories = new List<string>();
-                var gameInfoPath = Path.Combine(GameDirectory, "gameinfo.txt");
-                var rootPath = Directory.GetParent(GameDirectory).ToString();
-
-                if (!System.IO.File.Exists(gameInfoPath))
-                {
-                    Trace.TraceError($"Couldn't find gameinfo.txt at {gameInfoPath}");
-                    return new();
-                }
-
-                var fileStream = System.IO.File.OpenRead(gameInfoPath);
-                var gameInfo = KVSerializer.Create(KVSerializationFormat.KeyValues1Text).Deserialize(fileStream);
-
-                //var gameInfo = new KV.FileData(gameInfoPath).headnode.GetFirstByName("GameInfo");
-                if (gameInfo == null)
-                {
-                    Trace.TraceInformation($"Failed to parse GameInfo: {gameInfo}");
-                    Trace.TraceError($"Failed to parse GameInfo, did not find GameInfo block");
-                    return new();
-                }
-
-                //var searchPaths = gameInfo.GetFirstByName("FileSystem")?.GetFirstByName("SearchPaths");
-                var searchPaths = gameInfo["FileSystem"]?["SearchPaths"];
-                if (searchPaths == null)
-                {
-                    Trace.TraceInformation($"Failed to parse GameInfo: {gameInfo}");
-                    Trace.TraceError($"Failed to parse GameInfo, did not find GameInfo block");
-                    return new();
-                }
-
-                var collection = searchPaths.AsEnumerable<KVObject>().Select(m => new KeyValuePair<string, string>(m.Name, m.Value.ToString()));
-                foreach (var searchPath in collection)
-                {
-                    // ignore unsearchable paths. TODO: will need to remove .vpk from this check if we add support for packing from assets within vpk files
-                    if (searchPath.Value.Contains("|") && !searchPath.Value.Contains("|gameinfo_path|") || searchPath.Value.Contains(".vpk")) continue;
-
-                    // wildcard paths
-                    if (searchPath.Value.Contains("*"))
-                    {
-                        var fullPath = searchPath.Value;
-                        if (fullPath.Contains(("|gameinfo_path|")))
-                        {
-                            var newPath = searchPath.Value.Replace("*", "").Replace("|gameinfo_path|", "");
-                            fullPath = Path.GetFullPath(GameDirectory + "\\" + newPath.TrimEnd('\\'));
-                        }
-                        if (Path.IsPathRooted(fullPath.Replace("*", "")))
-                        {
-                            fullPath = fullPath.Replace("*", "");
-                        }
-                        else
-                        {
-                            var newPath = fullPath.Replace("*", "");
-                            fullPath = Path.GetFullPath(rootPath + "\\" + newPath.TrimEnd('\\'));
-                        }
-
-                        if (verbose)
-                            Trace.TraceInformation("Found wildcard path: {0}", fullPath);
-
-                        try
-                        {
-                            var directories = Directory.GetDirectories(fullPath);
-                            sourceDirectories.AddRange(directories);
-                        }
-                        catch { }
-                    }
-                    else if (searchPath.Value.Contains("|gameinfo_path|"))
-                    {
-                        var fullPath = GameDirectory;
-
-                        if (verbose)
-                            Trace.TraceInformation("Found search path: {0}", fullPath);
-
-                        sourceDirectories.Add(fullPath);
-                    }
-                    else if (Directory.Exists(searchPath.Value))
-                    {
-                        if (verbose)
-                            Trace.TraceInformation("Found search path: {0}", searchPath);
-
-                        sourceDirectories.Add(searchPath.Value);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var fullPath = Path.GetFullPath(rootPath + "\\" + searchPath.Value.TrimEnd('\\'));
-
-                            if (verbose)
-                                Trace.TraceInformation("Found search path: {0}", fullPath);
-
-                            sourceDirectories.Add(fullPath);
-                        }
-                        catch (Exception e)
-                        {
-                            Trace.TraceInformation("Failed to find search path: " + e);
-                            Trace.TraceWarning($"Search path invalid: {rootPath + "\\" + searchPath.Value.TrimEnd('\\')}");
-                        }
-                    }
-                }
-
-                // find Chaos engine game mount paths
-                // var mountedDirectories = GetMountedGamesSourceDirectories(gameInfo, Path.Combine(GameDirectory, "cfg", "mounts.kv"));
-                // if (mountedDirectories != null)
-                // {
-                //     sourceDirectories.AddRange(mountedDirectories);
-                //     foreach (var directory in mountedDirectories)
-                //     {
-                //         Trace.TraceInformation($"Found mounted search path: {directory}");
-                //     }
-                // }
-
-                return sourceDirectories.Distinct().ToList();
-            }
-
         }
 
         // ReSharper disable once CognitiveComplexity
@@ -218,7 +102,6 @@ namespace Nuke.Common.Tools.Source
                     .SetAppId(op.AppId)
                     .SetGamePath(Path.GetFullPath(op.GameDirectory))
                     .SetInstallDir(op.InstallDirectory)
-                    .SetInput(Path.GetFullPath(bspGameTargetFile))
                     .SetOutputDir(unpackDir)
                     .SetInput(bspGameTargetFile)
                 );
@@ -226,7 +109,7 @@ namespace Nuke.Common.Tools.Source
                 bspFileData.findBspPakDependencies(unpackDir);
 
                 var sourceDirectories = new List<string>();
-                var sourceDirs = op.GetSourceDirectories(true);
+
                 // PAK.GetSourceDirectories();
                 // var pakfile = new PAK(bspFileData, sourceDirectories, includeFiles, excludeFiles, excludeDirs,
                 //     excludedVpkFiles, outputFile, noswvtx);

@@ -9,54 +9,62 @@ using System.Linq;
 
 namespace Nuke.Common.Tools.Source
 {
-	[PublicAPI]
-	public static partial class Tasks
-	{
-		public static IReadOnlyCollection<Output> Source(Configure<Tools> configurator)
-		{
-			return Source(configurator(new Tools()));
-		}
+    [PublicAPI]
+    public static partial class Tasks
+    {
+        public static IReadOnlyCollection<Output> Source(Configure<Tools> configurator)
+        {
+            return Source(configurator(new Tools()));
+        }
 
-		public static IReadOnlyCollection<Output> Source(Tools toolsSettings = null)
-		{
-			toolsSettings = toolsSettings ?? throw new NullReferenceException("ToolPath is not defined");
-			if (!toolsSettings.Skip)
-			{
-				if (toolsSettings is IDownloadable)
-				{
-					var result = (toolsSettings as IDownloadable).Download();
-					if (!result) throw new FileNotFoundException($"{toolsSettings.Executable} was not found");
-				}
-				if ((toolsSettings is ISlammin) && (toolsSettings as ISlammin).UsingSlammin.HasValue)
-				{
-					var usingSlammin = (toolsSettings as ISlammin).UsingSlammin;
-					if (usingSlammin != null && usingSlammin.Value)
-					{
-						var crc32 = new Crc32Algorithm();
-						var hash = string.Empty;
-						var fs = File.ReadAllBytes(toolsSettings.ProcessToolPath);
-						foreach (var b in crc32.ComputeHash(fs)) hash += b.ToString("x2").ToUpper();
-
-						if (ISlammin.HashTable[toolsSettings.Executable] != hash)
-							ISlammin.Download(toolsSettings);
-					}
-				}
-
-				using var process = ProcessTasks.StartProcess(toolsSettings);
-                try
+        public static IReadOnlyCollection<Output> Source(Tools toolsSettings = null)
+        {
+            IReadOnlyCollection<Output> result = null;
+            toolsSettings = toolsSettings ?? throw new NullReferenceException("ToolPath is not defined");
+            if (!toolsSettings.Skip)
+            {
+                if (toolsSettings.Method != null)
                 {
-                    process.AssertZeroExitCode();
+                    result = toolsSettings.Method.Invoke(toolsSettings);
                 }
-                catch (Exception e)
+                else
                 {
-                    throw new Exception(process.Output.LastOrDefault().Text, e);
+                    if (toolsSettings is IDownloadable)
+                    {
+                        var download = (toolsSettings as IDownloadable).Download();
+                        if (!download) throw new FileNotFoundException($"{toolsSettings.Executable} was not found");
+                    }
+                    if ((toolsSettings is ISlammin) && (toolsSettings as ISlammin).UsingSlammin.HasValue)
+                    {
+                        var usingSlammin = (toolsSettings as ISlammin).UsingSlammin;
+                        if (usingSlammin != null && usingSlammin.Value)
+                        {
+                            var crc32 = new Crc32Algorithm();
+                            var hash = string.Empty;
+                            var fs = File.ReadAllBytes(toolsSettings.ProcessToolPath);
+                            foreach (var b in crc32.ComputeHash(fs)) hash += b.ToString("x2").ToUpper();
+
+                            if (ISlammin.HashTable[toolsSettings.Executable] != hash)
+                                ISlammin.Download(toolsSettings);
+                        }
+                    }
+
+                    using var process = ProcessTasks.StartProcess(toolsSettings);
+                    try
+                    {
+                        process.AssertZeroExitCode();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception(process.Output.LastOrDefault().Text, e);
+                    }
+                    if (!string.IsNullOrWhiteSpace(toolsSettings.StdOutput))
+                        File.WriteAllText(toolsSettings.StdOutput, process.Output.StdToText());
+                    toolsSettings.Callback?.Invoke(process.Output);
+                    result = process.Output;
                 }
-                if (!string.IsNullOrWhiteSpace(toolsSettings.StdOutput))
-					File.WriteAllText(toolsSettings.StdOutput, process.Output.StdToText());
-				toolsSettings.Callback?.Invoke(process.Output);
-				return process.Output;
-			}
-			return null;
-		}
-	}
+            }
+            return result;
+        }
+    }
 }

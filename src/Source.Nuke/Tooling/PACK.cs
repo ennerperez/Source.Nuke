@@ -23,6 +23,8 @@ namespace Nuke.Common.Tools.Source.Tooling
 		}
 
 		public string FileList { get; internal set; }
+		public bool RenameNav { get; internal set; }
+		public bool GenParticleManifest { get; internal set; }
 
 		/// <summary>
 		///
@@ -46,6 +48,8 @@ namespace Nuke.Common.Tools.Source.Tooling
 			}
 			return base.ConfigureProcessArguments(arguments);
 		}
+
+
 
 	}
 
@@ -83,5 +87,157 @@ namespace Nuke.Common.Tools.Source.Tooling
 		}
 
 		#endregion
+
+        #region RenameNav
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="verbose"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetRenameNav<T>(this T toolSettings, bool renameNav) where T : PACK
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.RenameNav = renameNav;
+            return toolSettings;
+        }
+
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="toolSettings"></param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		[Pure]
+		public static T ResetRenameNav<T>(this T toolSettings) where T : PACK
+		{
+			toolSettings = toolSettings.NewInstance();
+			toolSettings.RenameNav = false;
+			return toolSettings;
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="toolSettings"></param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		[Pure]
+		public static T EnableRenameNav<T>(this T toolSettings) where T : PACK
+		{
+			toolSettings = toolSettings.NewInstance();
+			toolSettings.RenameNav = true;
+			return toolSettings;
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="toolSettings"></param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		[Pure]
+		public static T DisableRenameNav<T>(this T toolSettings) where T : PACK
+		{
+			toolSettings = toolSettings.NewInstance();
+			toolSettings.RenameNav = false;
+			return toolSettings;
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="toolSettings"></param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		[Pure]
+		public static T ToggleRenameNav<T>(this T toolSettings) where T : PACK
+		{
+			toolSettings = toolSettings.NewInstance();
+			toolSettings.RenameNav = !toolSettings.RenameNav;
+			return toolSettings;
+		}
+
+        #endregion
+
+        #region RenameNav
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="verbose"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetGenParticleManifest<T>(this T toolSettings, bool genParticleManifest) where T : PACK
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.GenParticleManifest = genParticleManifest;
+            return toolSettings;
+        }
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetGenParticleManifest<T>(this T toolSettings) where T : PACK
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.GenParticleManifest = false;
+            return toolSettings;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T EnableGenParticleManifest<T>(this T toolSettings) where T : PACK
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.GenParticleManifest = true;
+            return toolSettings;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T DisableGenParticleManifest<T>(this T toolSettings) where T : PACK
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.GenParticleManifest = false;
+            return toolSettings;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ToggleGenParticleManifest<T>(this T toolSettings) where T : PACK
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.GenParticleManifest = !toolSettings.GenParticleManifest;
+            return toolSettings;
+        }
+
+        #endregion
 	}
 }

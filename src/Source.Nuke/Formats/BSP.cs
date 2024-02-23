@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Nuke.Common.Utilities.Collections;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,10 +10,10 @@ using ValveKeyValue;
 namespace Nuke.Common.Tools.Source.Formats
 {
     // this is the class that stores data about the bsp.
-	// You can find information about the file format here
-	// https://developer.valvesoftware.com/wiki/Source_BSP_File_Format#BSP_file_header
+    // You can find information about the file format here
+    // https://developer.valvesoftware.com/wiki/Source_BSP_File_Format#BSP_file_header
 
-	internal class BSP
+    internal class BSP
     {
         private FileStream bsp;
         private BinaryReader reader;
@@ -57,15 +59,18 @@ namespace Nuke.Common.Tools.Source.Formats
         public List<KeyValuePair<string, string>> PanoramaMapBackgrounds { get; set; }
         public KeyValuePair<string, string> PanoramaMapIcon { get; set; }
 
-        public FileInfo file { get; private set; }
-        public string gameFolder { get; private set; }
+        public bool Verbose { get; set; }
+        public string GameFolder { get; private set; }
+
+        public FileInfo File { get; private set; }
+
         private bool isL4D2 = false;
         private int bspVersion;
 
         public BSP(FileInfo file, string gameFolder)
         {
-            this.gameFolder = gameFolder;
-            this.file = file;
+            this.File = file;
+            this.GameFolder = gameFolder;
 
             offsets = new KeyValuePair<int, int>[64];
             using (bsp = new FileStream(file.FullName, FileMode.Open))
@@ -76,7 +81,7 @@ namespace Nuke.Common.Tools.Source.Formats
 
                 //hack for detecting l4d2 maps
                 if (reader.ReadInt32() == 0 && this.bspVersion == 21)
-                        isL4D2 = true;
+                    isL4D2 = true;
 
                 // reset reader position
                 bsp.Seek(-4, SeekOrigin.Current);
@@ -114,7 +119,7 @@ namespace Nuke.Common.Tools.Source.Formats
             }
         }
 
-        public void buildEntityList()
+        private void buildEntityList()
         {
             entityList = new List<Dictionary<string, string>>();
             entityListArrayForm = new List<List<Tuple<string, string>>>();
@@ -123,34 +128,34 @@ namespace Nuke.Common.Tools.Source.Formats
             var ent = reader.ReadBytes(offsets[0].Value);
             var ents = new List<byte>();
 
-	        const int LCURLY = 123;
-	        const int RCURLY = 125;
-	        const int NEWLINE = 10;
+            const int LCURLY = 123;
+            const int RCURLY = 125;
+            const int NEWLINE = 10;
 
             for (var i = 0; i < ent.Length; i++)
             {
-	            if (ent[i] == LCURLY && i + 1 < ent.Length)
-	            {
-		            // if curly isnt followed by newline assume its part of filename
-		            if (ent[i + 1] != NEWLINE)
-			            ents.Add(ent[i]);
-	            }
+                if (ent[i] == LCURLY && i + 1 < ent.Length)
+                {
+                    // if curly isnt followed by newline assume its part of filename
+                    if (ent[i + 1] != NEWLINE)
+                        ents.Add(ent[i]);
+                }
                 if (ent[i] != LCURLY && ent[i] != RCURLY)
-					ents.Add(ent[i]);
+                    ents.Add(ent[i]);
                 else if (ent[i] == RCURLY)
                 {
-					// if curly isnt followed by newline assume its part of filename
-	                if (i + 1 < ent.Length && ent[i + 1] != NEWLINE)
-	                {
-						ents.Add(ent[i]);
-						continue;
-	                }
+                    // if curly isnt followed by newline assume its part of filename
+                    if (i + 1 < ent.Length && ent[i + 1] != NEWLINE)
+                    {
+                        ents.Add(ent[i]);
+                        continue;
+                    }
 
 
-					var rawent = Encoding.ASCII.GetString(ents.ToArray());
+                    var rawent = Encoding.ASCII.GetString(ents.ToArray());
                     var entity = new Dictionary<string, string>();
                     var entityArrayFormat = new List<Tuple<string, string>>();
-					// split on \n, ignore \n inside of quotes
+                    // split on \n, ignore \n inside of quotes
                     foreach (var s in Regex.Split(rawent, "(?=(?:(?:[^\"]*\"){2})*[^\"]*$)\\n"))
                     {
                         if (s.Count() != 0)
@@ -168,7 +173,7 @@ namespace Nuke.Common.Tools.Source.Formats
             }
         }
 
-        public void buildTextureList()
+        private void buildTextureList()
         {
             // builds the list of textures applied to brushes
 
@@ -202,7 +207,7 @@ namespace Nuke.Common.Tools.Source.Formats
             TextureList.Add("materials/vgui/maps/menu_photos_" + mapname + ".vmt");
         }
 
-        public void buildEntTextureList()
+        private void buildEntTextureList()
         {
             // builds the list of textures referenced in entities
 
@@ -222,9 +227,9 @@ namespace Nuke.Common.Tools.Source.Formats
 
                 }
 
-                if(ent["classname"].Contains("skybox_swapper") && ent.ContainsKey("SkyboxName") )
+                if (ent["classname"].Contains("skybox_swapper") && ent.ContainsKey("SkyboxName"))
                 {
-                    if(ent.ContainsKey("targetname"))
+                    if (ent.ContainsKey("targetname"))
                     {
                         skybox_swappers.Add(ent["targetname"].ToLower());
                     }
@@ -257,13 +262,13 @@ namespace Nuke.Common.Tools.Source.Formats
                     }
                 }
 
-				// special condition for env_funnel. Hardcoded to use sprites/flare6.vmt
-				if (ent["classname"].Contains("env_funnel"))
-					materials.Add("sprites/flare6.vmt");
+                // special condition for env_funnel. Hardcoded to use sprites/flare6.vmt
+                if (ent["classname"].Contains("env_funnel"))
+                    materials.Add("sprites/flare6.vmt");
 
-				// special condition for env_embers. Hardcoded to use particle/fire.vmt
-				if (ent["classname"].Contains("env_embers"))
-					materials.Add("particle/fire.vmt");
+                // special condition for env_embers. Hardcoded to use particle/fire.vmt
+                if (ent["classname"].Contains("env_embers"))
+                    materials.Add("particle/fire.vmt");
 
                 //special condition for func_dustcloud and func_dustmotes.  Hardcoded to use particle/sparkles.vmt
                 if (ent["classname"].StartsWith("func_dust"))
@@ -271,20 +276,20 @@ namespace Nuke.Common.Tools.Source.Formats
 
                 // special condition for vgui_slideshow_display. directory paramater references all textures in a folder (does not include subfolders)
                 if (ent["classname"].Contains("vgui_slideshow_display"))
-	            {
-		            if (ent.ContainsKey("directory"))
-		            {
-			            var directory = $"{gameFolder}/materials/vgui/{ent["directory"]}";
-			            if (Directory.Exists(directory))
-			            {
-				            foreach (var file in Directory.GetFiles(directory))
-				            {
-					            if (file.EndsWith(".vmt"))
-									materials.Add($"/vgui/{ent["directory"]}/{Path.GetFileName(file)}");
-				            }
-			            }
-					}
-	            }
+                {
+                    if (ent.ContainsKey("directory"))
+                    {
+                        var directory = $"{GameFolder}/materials/vgui/{ent["directory"]}";
+                        if (Directory.Exists(directory))
+                        {
+                            foreach (var file in Directory.GetFiles(directory))
+                            {
+                                if (file.EndsWith(".vmt"))
+                                    materials.Add($"/vgui/{ent["directory"]}/{Path.GetFileName(file)}");
+                            }
+                        }
+                    }
+                }
 
             }
 
@@ -301,30 +306,31 @@ namespace Nuke.Common.Tools.Source.Formats
 
                     var (target, command, parameter) = io;
 
-                    switch (command) {
+                    switch (command)
+                    {
                         case "SetCountdownImage":
                             materials.Add($"vgui/{parameter}");
                             break;
                         case "Command":
                             // format of Command is <command> <parameter>
-                            if(!parameter.Contains(' '))
+                            if (!parameter.Contains(' '))
                             {
                                 continue;
                             }
-                            (command, parameter) = parameter.Split(' ') switch { var param => (param[0], param[1])};
+                            (command, parameter) = parameter.Split(' ') switch { var param => (param[0], param[1]) };
                             if (command == "r_screenoverlay")
                                 materials.Add(parameter);
                             break;
                         case "AddOutput":
-                            if(!parameter.Contains(' '))
+                            if (!parameter.Contains(' '))
                             {
                                 continue;
                             }
                             string k, v;
-                            (k,v) = parameter.Split(' ') switch { var a => (a[0], a[1])};
+                            (k, v) = parameter.Split(' ') switch { var a => (a[0], a[1]) };
 
                             // support packing mats when using addoutput to change skybox_swappers
-                            if(skybox_swappers.Contains(target.ToLower()) && k.ToLower() == "skyboxname")
+                            if (skybox_swappers.Contains(target.ToLower()) && k.ToLower() == "skyboxname")
                             {
                                 foreach (var s in new string[] { "", "bk", "dn", "ft", "lf", "rt", "up" })
                                 {
@@ -349,7 +355,7 @@ namespace Nuke.Common.Tools.Source.Formats
             }
         }
 
-        public void buildModelList()
+        private void buildModelList()
         {
             // builds the list of models that are from prop_static
 
@@ -417,36 +423,36 @@ namespace Nuke.Common.Tools.Source.Formats
 
         }
 
-        public void buildEntModelList()
+        private void buildEntModelList()
         {
             // builds the list of models referenced in entities
 
             EntModelList = new List<string>();
-	        foreach (var ent in entityList)
-	        {
-				foreach (var prop in ent)
-				{
-					if (ent["classname"].StartsWith("func"))
-					{
-						if (prop.Key == "gibmodel")
-							EntModelList.Add(prop.Value);
-					}
-					else if (!ent["classname"].StartsWith("trigger") &&
-						!ent["classname"].Contains("sprite"))
-					{
-						if (Keys.vmfModelKeys.Contains(prop.Key))
-							EntModelList.Add(prop.Value);
-						// item_sodacan is hardcoded to models/can.mdl
-						// env_beverage spawns item_sodacans
-						else if (prop.Value == "item_sodacan" || prop.Value == "env_beverage")
-							EntModelList.Add("models/can.mdl");
-						// tf_projectile_throwable is hardcoded to models/props_gameplay/small_loaf.mdl
-						else if (prop.Value == "tf_projectile_throwable")
-							EntModelList.Add("models/props_gameplay/small_loaf.mdl");
-					}
+            foreach (var ent in entityList)
+            {
+                foreach (var prop in ent)
+                {
+                    if (ent["classname"].StartsWith("func"))
+                    {
+                        if (prop.Key == "gibmodel")
+                            EntModelList.Add(prop.Value);
+                    }
+                    else if (!ent["classname"].StartsWith("trigger") &&
+                             !ent["classname"].Contains("sprite"))
+                    {
+                        if (Keys.vmfModelKeys.Contains(prop.Key))
+                            EntModelList.Add(prop.Value);
+                        // item_sodacan is hardcoded to models/can.mdl
+                        // env_beverage spawns item_sodacans
+                        else if (prop.Value == "item_sodacan" || prop.Value == "env_beverage")
+                            EntModelList.Add("models/can.mdl");
+                        // tf_projectile_throwable is hardcoded to models/props_gameplay/small_loaf.mdl
+                        else if (prop.Value == "tf_projectile_throwable")
+                            EntModelList.Add("models/props_gameplay/small_loaf.mdl");
+                    }
 
-				}
-			}
+                }
+            }
 
             // pack I/O referenced models
             // need to use array form of entity because multiple outputs with same command can't be stored in dict
@@ -466,16 +472,16 @@ namespace Nuke.Common.Tools.Source.Formats
             }
         }
 
-        public void buildEntSoundList()
+        private void buildEntSoundList()
         {
             // builds the list of sounds referenced in entities
             EntSoundList = new List<string>();
-			foreach (var ent in entityList)
-				foreach (var prop in ent)
-				{
-					if (Keys.vmfSoundKeys.Contains(prop.Key.ToLower()))
-						EntSoundList.Add("sound/" + prop.Value.Trim(SpecialCaracters));
-				}
+            foreach (var ent in entityList)
+            foreach (var prop in ent)
+            {
+                if (Keys.vmfSoundKeys.Contains(prop.Key.ToLower()))
+                    EntSoundList.Add("sound/" + prop.Value.Trim(SpecialCaracters));
+            }
 
             // pack I/O referenced sounds
             // need to use array form of entity because multiple outputs with same command can't be stored in dict
@@ -497,19 +503,19 @@ namespace Nuke.Common.Tools.Source.Formats
                     else if (command == "Command")
                     {
                         // format of Command is <command> <parameter>
-                        if(!parameter.Contains(' '))
+                        if (!parameter.Contains(' '))
                             continue;
 
-                        (command, parameter) = parameter.Split(' ') switch { var param => (param[0], param[1])};
+                        (command, parameter) = parameter.Split(' ') switch { var param => (param[0], param[1]) };
 
-                        if (command == "play" || command == "playgamesound" )
+                        if (command == "play" || command == "playgamesound")
                             EntSoundList.Add($"sound/{parameter}");
                     }
                 }
             }
         }
         // color correction, etc.
-        public void buildMiscList()
+        private void buildMiscList()
         {
             MiscList = new List<string>();
 
@@ -537,13 +543,13 @@ namespace Nuke.Common.Tools.Source.Formats
             }
         }
 
-        public void buildParticleList()
+        private void buildParticleList()
         {
             ParticleList = new List<string>();
             foreach (var ent in entityList)
-                foreach (var particle in ent)
-                     if (particle.Key.ToLower() == "effect_name")
-                        ParticleList.Add(particle.Value);
+            foreach (var particle in ent)
+                if (particle.Key.ToLower() == "effect_name")
+                    ParticleList.Add(particle.Value);
         }
 
         /// <summary>
@@ -592,6 +598,437 @@ namespace Nuke.Common.Tools.Source.Formats
             return new Tuple<string, string, string>(io[0], targetInput, parameter);
         }
 
+        private List<string> getSourceDirectories(string depotDirectory, long appId, string gameName)
+        {
+            var gameDirectory = Path.Combine(depotDirectory, appId.ToString(), gameName);
+
+            var sourceDirectories = new List<string>();
+            var gameInfoPath = Path.Combine(gameDirectory, "gameinfo.txt");
+            var rootPath = Directory.GetParent(gameDirectory).ToString();
+
+            if (!System.IO.File.Exists(gameInfoPath))
+            {
+                Trace.TraceError($"Couldn't find gameinfo.txt at {gameInfoPath}");
+                return new();
+            }
+
+            var fileStream = System.IO.File.OpenRead(gameInfoPath);
+            var gameInfo = KVSerializer.Create(KVSerializationFormat.KeyValues1Text).Deserialize(fileStream);
+
+            //var gameInfo = new KV.FileData(gameInfoPath).headnode.GetFirstByName("GameInfo");
+            if (gameInfo == null)
+            {
+                Trace.TraceInformation($"Failed to parse GameInfo: {gameInfo}");
+                Trace.TraceError($"Failed to parse GameInfo, did not find GameInfo block");
+                return new();
+            }
+
+            //var searchPaths = gameInfo.GetFirstByName("FileSystem")?.GetFirstByName("SearchPaths");
+            var searchPaths = gameInfo["FileSystem"]?["SearchPaths"];
+            if (searchPaths == null)
+            {
+                Trace.TraceInformation($"Failed to parse GameInfo: {gameInfo}");
+                Trace.TraceError($"Failed to parse GameInfo, did not find GameInfo block");
+                return new();
+            }
+
+            var collection = searchPaths.AsEnumerable<KVObject>().Select(m => new KeyValuePair<string, string>(m.Name, m.Value.ToString()));
+            foreach (var searchPath in collection)
+            {
+                // ignore unsearchable paths. TODO: will need to remove .vpk from this check if we add support for packing from assets within vpk files
+                if (searchPath.Value.Contains("|") && !searchPath.Value.Contains("|gameinfo_path|") || searchPath.Value.Contains(".vpk")) continue;
+
+                // wildcard paths
+                if (searchPath.Value.Contains("*"))
+                {
+                    var fullPath = searchPath.Value;
+                    if (fullPath.Contains(("|gameinfo_path|")))
+                    {
+                        var newPath = searchPath.Value.Replace("*", "").Replace("|gameinfo_path|", "");
+                        fullPath = Path.GetFullPath(gameDirectory + "\\" + newPath.TrimEnd('\\'));
+                    }
+                    if (Path.IsPathRooted(fullPath.Replace("*", "")))
+                    {
+                        fullPath = fullPath.Replace("*", "");
+                    }
+                    else
+                    {
+                        var newPath = fullPath.Replace("*", "");
+                        fullPath = Path.GetFullPath(rootPath + "\\" + newPath.TrimEnd('\\'));
+                    }
+
+                    if (Verbose)
+                        Trace.TraceInformation("Found wildcard path: {0}", fullPath);
+
+                    try
+                    {
+                        var directories = Directory.GetDirectories(fullPath);
+                        sourceDirectories.AddRange(directories);
+                    }
+                    catch { }
+                }
+                else if (searchPath.Value.Contains("|gameinfo_path|"))
+                {
+                    var fullPath = gameDirectory;
+
+                    if (Verbose)
+                        Trace.TraceInformation("Found search path: {0}", fullPath);
+
+                    sourceDirectories.Add(fullPath);
+                }
+                else if (Directory.Exists(searchPath.Value))
+                {
+                    if (Verbose)
+                        Trace.TraceInformation("Found search path: {0}", searchPath);
+
+                    sourceDirectories.Add(searchPath.Value);
+                }
+                else
+                {
+                    try
+                    {
+                        var fullPath = Path.GetFullPath(rootPath + "\\" + searchPath.Value.TrimEnd('\\'));
+
+                        if (Verbose)
+                            Trace.TraceInformation("Found search path: {0}", fullPath);
+
+                        sourceDirectories.Add(fullPath);
+                    }
+                    catch (Exception e)
+                    {
+                        Trace.TraceInformation("Failed to find search path: " + e);
+                        Trace.TraceWarning($"Search path invalid: {rootPath + "\\" + searchPath.Value.TrimEnd('\\')}");
+                    }
+                }
+            }
+
+            // find Chaos engine game mount paths
+            // var mountedDirectories = GetMountedGamesSourceDirectories(gameInfo, Path.Combine(GameDirectory, "cfg", "mounts.kv"));
+            // if (mountedDirectories != null)
+            // {
+            //     sourceDirectories.AddRange(mountedDirectories);
+            //     foreach (var directory in mountedDirectories)
+            //     {
+            //         Trace.TraceInformation($"Found mounted search path: {directory}");
+            //     }
+            // }
+
+            return sourceDirectories.Distinct().ToList();
+        }
+
+        internal void findBspUtilityFiles(string depotDirectory, long appId, string gameName)
+        {
+            var sourceDirectories = getSourceDirectories(Path.GetFullPath(depotDirectory), appId, gameName);
+            // Utility files are other files that are not assets and are sometimes not referenced in the bsp
+            // those are manifests, soundscapes, nav, radar and detail files
+
+            // Soundscape file
+            string internalPath = "scripts/soundscapes_" + File.Name.Replace(".bsp", ".txt");
+            // Soundscapes can have either .txt or .vsc extensions
+            string internalPathVsc = "scripts/soundscapes_" + File.Name.Replace(".bsp", ".vsc");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+                string externalVscPath = source + "/" + internalPathVsc;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    soundscape = new KeyValuePair<string, string>(internalPath, externalPath);
+                    break;
+                }
+                if (System.IO.File.Exists(externalVscPath))
+                {
+                    soundscape = new KeyValuePair<string, string>(internalPathVsc, externalVscPath);
+                    break;
+                }
+            }
+
+            // Soundscript file
+            internalPath = "maps/" + File.Name.Replace(".bsp", "") + "_level_sounds.txt";
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    soundscript = new KeyValuePair<string, string>(internalPath, externalPath);
+                    break;
+                }
+            }
+
+            // Nav file (.nav)
+            internalPath = "maps/" + File.Name.Replace(".bsp", ".nav");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    if (RenameNav)
+                        internalPath = "maps/embed.nav";
+                    nav = new KeyValuePair<string, string>(internalPath, externalPath);
+                    break;
+                }
+            }
+
+            // detail file (.vbsp)
+            Dictionary<string, string> worldspawn = entityList.First(item => item["classname"] == "worldspawn");
+            if (worldspawn.ContainsKey("detailvbsp"))
+            {
+                internalPath = worldspawn["detailvbsp"];
+
+                foreach (string source in sourceDirectories)
+                {
+                    string externalPath = source + "/" + internalPath;
+
+                    if (System.IO.File.Exists(externalPath))
+                    {
+                        detail = new KeyValuePair<string, string>(internalPath, externalPath);
+                        break;
+                    }
+                }
+            }
+
+
+            // Vehicle scripts
+            List<KeyValuePair<string, string>> vehicleScripts = new List<KeyValuePair<string, string>>();
+            foreach (Dictionary<string, string> ent in entityList)
+            {
+                if (ent.ContainsKey("vehiclescript"))
+                {
+                    foreach (string source in sourceDirectories)
+                    {
+                        string externalPath = source + "/" + ent["vehiclescript"];
+                        if (System.IO.File.Exists(externalPath))
+                        {
+                            internalPath = ent["vehiclescript"];
+                            vehicleScripts.Add(new KeyValuePair<string, string>(ent["vehiclescript"], externalPath));
+                        }
+                    }
+                }
+            }
+            VehicleScriptList = vehicleScripts;
+
+            // Effect Scripts
+            List<KeyValuePair<string, string>> effectScripts = new List<KeyValuePair<string, string>>();
+            foreach (Dictionary<string, string> ent in entityList)
+            {
+                if (ent.ContainsKey("scriptfile"))
+                {
+                    foreach (string source in sourceDirectories)
+                    {
+                        string externalPath = source + "/" + ent["scriptfile"];
+                        if (System.IO.File.Exists(externalPath))
+                        {
+                            internalPath = ent["scriptfile"];
+                            effectScripts.Add(new KeyValuePair<string, string>(ent["scriptfile"], externalPath));
+                        }
+                    }
+                }
+            }
+            EffectScriptList = effectScripts;
+
+            // Res file (for tf2's pd gamemode)
+            Dictionary<string, string>? pd_ent = entityList.FirstOrDefault(item => item["classname"] == "tf_logic_player_destruction");
+            if (pd_ent != null && pd_ent.ContainsKey("res_file"))
+            {
+                foreach (string source in sourceDirectories)
+                {
+                    string externalPath = source + "/" + pd_ent["res_file"];
+                    if (System.IO.File.Exists(externalPath))
+                    {
+                        res.Add(new KeyValuePair<string, string>(pd_ent["res_file"], externalPath));
+                        break;
+                    }
+                }
+            }
+
+            // tf2 tc round overview files
+            internalPath = "resource/roundinfo/" + File.Name.Replace(".bsp", ".res");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    res.Add(new KeyValuePair<string, string>(internalPath, externalPath));
+                    break;
+                }
+            }
+            internalPath = "materials/overviews/" + File.Name.Replace(".bsp", ".vmt");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    TextureList.Add(internalPath);
+                    break;
+                }
+            }
+
+            // Radar file
+            internalPath = "resource/overviews/" + File.Name.Replace(".bsp", ".txt");
+            List<KeyValuePair<string, string>> ddsfiles = new List<KeyValuePair<string, string>>();
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    radartxt = new KeyValuePair<string, string>(internalPath, externalPath);
+                    TextureList.AddRange(findVmtMaterials(externalPath));
+
+                    List<string> ddsInternalPaths = findRadarDdsFiles(externalPath);
+                    //find out if they exists or not
+                    foreach (string ddsInternalPath in ddsInternalPaths)
+                    {
+                        foreach (string source2 in sourceDirectories)
+                        {
+                            string ddsExternalPath = source2 + "/" + ddsInternalPath;
+                            if (System.IO.File.Exists(ddsExternalPath))
+                            {
+                                ddsfiles.Add(new KeyValuePair<string, string>(ddsInternalPath, ddsExternalPath));
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            radardds = ddsfiles;
+
+            // csgo kv file (.kv)
+            internalPath = "maps/" + File.Name.Replace(".bsp", ".kv");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    kv = new KeyValuePair<string, string>(internalPath, externalPath);
+                    break;
+                }
+            }
+
+            // csgo loading screen text file (.txt)
+            internalPath = "maps/" + File.Name.Replace(".bsp", ".txt");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    txt = new KeyValuePair<string, string>(internalPath, externalPath);
+                    break;
+                }
+            }
+
+            // csgo loading screen image (.jpg)
+            internalPath = "maps/" + File.Name.Replace(".bsp", "");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+                foreach (string extension in new[] { ".jpg", ".jpeg" })
+                    if (System.IO.File.Exists(externalPath + extension))
+                        jpg = new KeyValuePair<string, string>(internalPath + ".jpg", externalPath + extension);
+            }
+
+            // csgo panorama map backgrounds (.png)
+            internalPath = "materials/panorama/images/map_icons/screenshots/";
+            var panoramaMapBackgrounds = new List<KeyValuePair<string, string>>();
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+                string bspName = File.Name.Replace(".bsp", "");
+
+                foreach (string resolution in new[] { "360p", "1080p" })
+                    if (System.IO.File.Exists($"{externalPath}{resolution}/{bspName}.png"))
+                        panoramaMapBackgrounds.Add(new KeyValuePair<string, string>($"{internalPath}{resolution}/{bspName}.png", $"{externalPath}{resolution}/{bspName}.png"));
+            }
+            PanoramaMapBackgrounds = panoramaMapBackgrounds;
+
+            // csgo panorama map icon
+            internalPath = "materials/panorama/images/map_icons/";
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+                string bspName = File.Name.Replace(".bsp", "");
+                foreach (string extension in new[] { ".svg" })
+                    if (System.IO.File.Exists($"{externalPath}map_icon_{bspName}{extension}"))
+                        PanoramaMapIcon = new KeyValuePair<string, string>($"{internalPath}map_icon_{bspName}{extension}", $"{externalPath}map_icon_{bspName}{extension}");
+            }
+
+            // csgo dz tablets
+            internalPath = "materials/models/weapons/v_models/tablet/tablet_radar_" + File.Name.Replace(".bsp", ".vtf");
+            foreach (string source in sourceDirectories)
+            {
+                string externalPath = source + "/" + internalPath;
+
+                if (System.IO.File.Exists(externalPath))
+                {
+                    RadarTablet = new KeyValuePair<string, string>(internalPath, externalPath);
+                    break;
+                }
+            }
+
+            // language files, particle manifests and soundscript file
+            // (these language files are localized text files for tf2 mission briefings)
+            string internalDir = "maps/";
+            string name = File.Name.Replace(".bsp", "");
+            string searchPattern = name + "*.txt";
+            List<KeyValuePair<string, string>> langfiles = new List<KeyValuePair<string, string>>();
+
+            foreach (string source in sourceDirectories)
+            {
+                string externalDir = source + "/" + internalDir;
+                DirectoryInfo dir = new DirectoryInfo(externalDir);
+
+                if (dir.Exists)
+                    foreach (FileInfo f in dir.GetFiles(searchPattern))
+                    {
+                        // particle files if particle manifest is not being generated
+                        if (f.Name.StartsWith(name + "_particles") || f.Name.StartsWith(name + "_manifest"))
+                        {
+                            if (!GenParticleManifest)
+                                particleManifest = new KeyValuePair<string, string>(internalDir + f.Name, externalDir + f.Name);
+                            continue;
+                        }
+                        // soundscript
+                        if (f.Name.StartsWith(name + "_level_sounds"))
+                            soundscript =
+                                new KeyValuePair<string, string>(internalDir + f.Name, externalDir + f.Name);
+                        // presumably language files
+                        else
+                            langfiles.Add(new KeyValuePair<string, string>(internalDir + f.Name, externalDir + f.Name));
+                    }
+            }
+            languages = langfiles;
+
+            // ASW/Source2009 branch VScripts
+            List<string> vscripts = new List<string>();
+
+            foreach (Dictionary<string, string> entity in entityList)
+            {
+                foreach (KeyValuePair<string, string> kvp in entity)
+                {
+                    if (kvp.Key.ToLower() == "vscripts")
+                    {
+                        string[] scripts = kvp.Value.Split(' ');
+                        foreach (string script in scripts)
+                        {
+                            vscripts.Add("scripts/vscripts/" + script);
+                        }
+                    }
+                }
+            }
+            vscriptList = vscripts.Distinct().ToList();
+        }
+
+        public bool RenameNav { get; set; }
+
+        public bool GenParticleManifest { get; set; }
+
         internal void findBspPakDependencies(string tempdir)
         {
             // Search the temp folder to find dependencies of files extracted from the pak file
@@ -606,12 +1043,69 @@ namespace Nuke.Common.Tools.Source.Formats
                 }
         }
 
-        private static List<string> findVmtMaterials(string fullpath)
+        private List<string> findRadarDdsFiles(string fullpath)
+        {
+            // finds vmt files associated with radar overview files
+
+            var DDSs = new List<string>();
+            //var overviewFile = new KV.FileData(fullpath);
+            var stream = new MemoryStream(System.IO.File.ReadAllBytes(fullpath));
+            var overviewFile = KVSerializer.Create(KVSerializationFormat.KeyValues1Text).Deserialize(stream);
+
+            // // Contains no blocks, return empty list
+            // if (overviewFile.headnode.subBlocks.Count == 0)
+            //     return DDSs;
+            //
+            // foreach (var subblock in overviewFile.headnode.subBlocks)
+            // {
+            //     var material = subblock.TryGetStringValue("material");
+            //     // failed to get material, file contains no materials
+            //     if (material == "")
+            //         break;
+            //
+            //     string radarPath = $"resource/{vmtPathParser(material, false)}";
+            //     // clean path so it never contains _radar
+            //     if (radarPath.EndsWith("_radar"))
+            //     {
+            //         radarPath = radarPath.Replace("_radar", "");
+            //     }
+            //
+            //     // add default radar
+            //     DDSs.Add($"{radarPath}_radar.dds");
+            //
+            //     var verticalSections = subblock.GetFirstByName("verticalsections");
+            //     if (verticalSections == null)
+            //         break;
+            //
+            //     // add multi-level radars
+            //     foreach (var section in verticalSections.subBlocks)
+            //     {
+            //         DDSs.Add($"{radarPath}_{section.name.Replace("\"", string.Empty)}_radar.dds");
+            //     }
+            // }
+
+            return DDSs;
+        }
+
+        private string vmtPathParser(string vmtline, bool needsSplit = true)
+        {
+            if (needsSplit)
+                vmtline = vmtline.Split(new char[] { ' ' }, 2)[1]; // removes the parameter name
+            vmtline = vmtline.Split(new string[] { "//", "\\\\" }, StringSplitOptions.None)[0]; // removes endline parameter
+            vmtline = vmtline.Trim(new char[] { ' ', '/', '\\' }); // removes leading slashes
+            vmtline = vmtline.Replace('\\', '/'); // normalize slashes
+            if (vmtline.StartsWith("materials/"))
+                vmtline = vmtline.Remove(0, "materials/".Length); // removes materials/ if its the beginning of the string for consistency
+            if (vmtline.EndsWith(".vmt") || vmtline.EndsWith(".vtf")) // removes extentions if present for consistency
+                vmtline = vmtline.Substring(0, vmtline.Length - 4);
+            return vmtline;
+        }
+        private List<string> findVmtMaterials(string fullpath)
         {
             // finds vmt files associated with vmt file
 
             var vmtList = new List<string>();
-            foreach (var line in File.ReadAllLines(fullpath))
+            foreach (var line in System.IO.File.ReadAllLines(fullpath))
             {
                 var param = line.Replace("\"", " ").Replace("\t", " ").Trim();
                 if (Keys.vmtMaterialKeyWords.Any(key => param.StartsWith(key + " ")))
@@ -622,12 +1116,12 @@ namespace Nuke.Common.Tools.Source.Formats
             return vmtList;
         }
 
-        private static List<string> findVmtTextures(string fullpath)
+        private List<string> findVmtTextures(string fullpath)
         {
             // finds vtfs files associated with vmt file
 
             var vtfList = new List<string>();
-            foreach (var line in File.ReadAllLines(fullpath))
+            foreach (var line in System.IO.File.ReadAllLines(fullpath))
             {
                 var param = line.Replace("\"", " ").Replace("\t", " ").Trim();
 
@@ -641,13 +1135,13 @@ namespace Nuke.Common.Tools.Source.Formats
             return vtfList;
         }
 
-        public static string vmtPathParser2(string vmtline)
+        public string vmtPathParser2(string vmtline)
         {
             var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(vmtline + "\n")); // must add a newline to prevent parsing error
             var deserialized = KVSerializer.Create(KVSerializationFormat.KeyValues1Text).Deserialize(stream); // KVSerializationFormat ?
             var value = deserialized.Value.ToString();
 
-            if(value == null)
+            if (value == null)
             {
                 System.Diagnostics.Trace.TraceError($"KVSerializer.Deserialize returned null: {vmtline}");
                 return string.Empty;

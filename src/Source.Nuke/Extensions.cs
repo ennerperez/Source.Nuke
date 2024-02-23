@@ -358,6 +358,39 @@ namespace Nuke.Common.Tools.Source
 
 		#endregion
 
+        #region Delegate
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <param name="delegate"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T SetMethod<T>(this T toolSettings, Func<Tools, IReadOnlyCollection<Output>> method) where T : Tools
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Method = method;
+            return toolSettings;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="toolSettings"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static T ResetMethod<T>(this T toolSettings) where T : Tools
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Method = null;
+            return toolSettings;
+        }
+
+        #endregion
+
 		#region Low
 
         /// <summary>

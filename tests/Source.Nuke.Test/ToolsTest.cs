@@ -8,6 +8,7 @@ using Nuke.Common.Tools.Source;
 using Nuke.Common.Tools.Source.Formats;
 using Nuke.Common.Tools.Source.Tooling;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,14 +32,12 @@ namespace Source.Nuke.Test
             GameName = "hl2mp",
             DepotDirectory = "depots",
             File = Path.Combine("assets", "maps", "sdk_background.vmf"),
+            Fast = true,
+            Slammin = true
         };
 
-        [Theory, Order(2)]
-        [InlineData(true, true)]
-        [InlineData(false, true)]
-        [InlineData(false, false)]
-        [InlineData(true, false)]
-        public void VBSP(bool fast, bool slammin)
+        [Fact, Order(1)]
+        public void VBSP()
         {
             try
             {
@@ -49,10 +48,10 @@ namespace Source.Nuke.Test
                     .SetGamePath(Path.GetFullPath(op.GameDirectory))
                     .SetInstallDir(op.InstallDirectory)
                     //
-                    .SetFast(fast)
+                    .SetFast(op.Fast)
                     //
                     .SetInput(op.File)
-                    .SetUsingSlammin(slammin)
+                    .SetUsingSlammin(op.Slammin)
                 );
 
                 var bspFile = Path.ChangeExtension(op.File, "bsp");
@@ -77,12 +76,8 @@ namespace Source.Nuke.Test
             }
         }
 
-        [Theory, Order(3)]
-        [InlineData(true, true)]
-        [InlineData(false, true)]
-        [InlineData(false, false)]
-        [InlineData(true, false)]
-        public void VVIS(bool fast, bool slammin)
+        [Fact, Order(2)]
+        public void VVIS()
         {
             try
             {
@@ -95,11 +90,11 @@ namespace Source.Nuke.Test
                     .SetGamePath(Path.GetFullPath(op.GameDirectory))
                     .SetInstallDir(op.InstallDirectory)
                     //
-                    .SetFast(fast)
-                    .SetNoSort(fast)
+                    .SetFast(op.Fast)
+                    .SetNoSort(op.Fast)
                     //
                     .SetInput(bspFile)
-                    .SetUsingSlammin(slammin)
+                    .SetUsingSlammin(op.Slammin)
                 );
 
                 Assert.True(true);
@@ -120,12 +115,8 @@ namespace Source.Nuke.Test
             }
         }
 
-        [Theory, Order(4)]
-        [InlineData(true, true)]
-        [InlineData(false, true)]
-        [InlineData(false, false)]
-        [InlineData(true, false)]
-        public void VRAD(bool fast, bool slammin)
+        [Fact, Order(3)]
+        public void VRAD()
         {
             try
             {
@@ -142,7 +133,7 @@ namespace Source.Nuke.Test
                     .SetBounce((ushort)(op.Fast ? 2 : 100))
                     //
                     .SetInput(bspFile)
-                    .SetUsingSlammin(slammin)
+                    .SetUsingSlammin(op.Slammin)
                 );
 
                 Assert.True(true);
@@ -163,7 +154,7 @@ namespace Source.Nuke.Test
             }
         }
 
-        [Fact, Order(5)]
+        [Fact, Order(4)]
         public void CUBEMAP()
         {
             try
@@ -202,7 +193,7 @@ namespace Source.Nuke.Test
             }
         }
 
-        [Fact, Order(6)]
+        [Fact, Order(5)]
         public void UNPACK()
         {
             try
@@ -221,7 +212,6 @@ namespace Source.Nuke.Test
                     .SetAppId(op.AppId)
                     .SetGamePath(Path.GetFullPath(op.GameDirectory))
                     .SetInstallDir(op.InstallDirectory)
-                    .SetInput(Path.GetFullPath(bspGameTargetFile))
                     .SetOutputDir(unpackDir)
                     .SetInput(bspGameTargetFile)
                 );
@@ -229,11 +219,34 @@ namespace Source.Nuke.Test
                 if (!Directory.Exists(unpackDir))
                     throw new DirectoryNotFoundException(unpackDir);
 
-                var bspFileData = new BSP(new FileInfo(bspGameTargetFile), Path.GetFullPath(op.GameDirectory));
-                bspFileData.findBspPakDependencies(unpackDir);
+                Tasks.Source(_ => new PACK()
+                    //.SetProcessWorkingDirectory(op.InstallDirectory)
+                    .SetVerbose(op.Verbose)
+                    .SetAppId(op.AppId)
+                    .SetGamePath(Path.GetFullPath(op.GameDirectory))
+                    .SetInstallDir(op.InstallDirectory)
+                    .SetInput(bspGameTargetFile)
+                    .SetRenameNav(true)
+                    .SetGenParticleManifest(true)
+                    .SetMethod((t) =>
+                    {
+                        var bspFileData = new BSP(new FileInfo(t.Input), t.Game)
+                        {
+                            GenParticleManifest = (t as PACK).GenParticleManifest,
+                            RenameNav = (t as PACK).RenameNav,
+                            Verbose = t.Verbose ?? false
+                        };
+                        bspFileData.findBspUtilityFiles(op.DepotDirectory, t.AppId, op.GameName);
+                        bspFileData.findBspPakDependencies(unpackDir);
 
-                if (!bspFileData.TextureList.Any())
-                    throw new Exception("No elements in textures list");
+                        if (!bspFileData.TextureList.Any())
+                            throw new Exception("No elements in textures list");
+
+                        Trace.TraceInformation("Initializing pak file...");
+
+                        return null;
+                    })
+                );
 
                 Assert.True(true);
 
